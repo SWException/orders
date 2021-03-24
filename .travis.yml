@@ -1,0 +1,32 @@
+language: node_js
+node_js:
+  - 12
+
+deploy_service_job: &DEPLOY_SERVICE_JOB
+  cache:
+    directories:
+      - node_modules
+      - $HOME/.cache/yarn
+      - .serverless
+
+  install:
+    - npm install -g serverless
+    - travis_retry npm install
+    - npm i --force
+    - travis_retry npm i
+  
+  script:
+    - npx sls deploy
+
+jobs:
+  include:
+    - <<: *DEPLOY_SERVICE_JOB
+      name: "Deploy BE"
+      env:
+        - SERVICE_PATH="/"
+
+branches:
+  only:
+    - develop
+    - master
+    - feature/add-product-cart

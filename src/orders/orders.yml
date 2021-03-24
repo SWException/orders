@@ -1,0 +1,116 @@
+get:
+  summary: ritorna ordini
+  description: ritorna la lista di tutti gli ordini effettuati se il JWT è di un venditore
+  operationId: getOrders
+  tags:
+    - sellers
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT del venditore/cliente
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: lista ordini
+      content:
+        application/json:
+          schema:
+            $ref: "schema.json#/responseOrders"
+          example:
+            {
+              status: "success",
+              data: [
+                {
+                  order_id: "1", # TODO definizione UUID ordini
+                  date: "2021-03-17",
+                  total: 10,
+                  article_count: 3,
+                  status: "pending"
+                },
+                {
+                  order_id: "2", # TODO
+                  date: "2021-03-16",
+                  total: 20,
+                  article_count: 5,
+                  status: "shipped"
+                },
+                {
+                  order_id: "3", # TODO
+                  date: "2021-03-15",
+                  total: 10,
+                  article_count: "2",
+                  status: "cancelled"
+                }
+              ]
+            }
+post:
+  summary: genera ordine
+  description: genera un nuovo ordine a partire da un carrello
+  operationId: placeOrder
+  tags:
+    - guest
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT del venditore/cliente
+      schema:
+        type: string
+      required: true
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "schema.json#/placeOrder"
+        example:
+          {
+            user_id: "1",
+            products: # lista prodotti acquistati
+            [
+              {
+                id: "prodotto1",
+                name: "prodotto 1",
+                price: 3,
+                quantity: 5
+              },
+              {
+                id: "prodotto2",
+                name: "prodotto 2",
+                price: 1,
+                quantity: 3
+              }
+            ],
+            shipping_address:
+            {
+              recipientName: "donald",
+              recipientSurname: "duck",
+              address: "Via Portesin 18",
+              city: "Padova",
+              code: "35131",
+              district: "PD"
+            },
+            billing_address:
+            {
+              recipientName: "donald",
+              recipientSurname: "duck",
+              address: "Via Portesin 18",
+              city: "Padova",
+              code: "35131",
+              district: "PD"
+            },
+            status: "payed",
+          }
+  responses:
+    200:
+      description: ordine inserito con successo
+      content:
+        application/json:
+          schema:
+            $ref: "../utils/schema.json#/response"
+          example:
+            {
+              status: "success",
+              message: "ordine inserito con successo"
+            }

@@ -1,0 +1,41 @@
+{
+    "$id": "src/orders/schema.json",
+    "order": {
+        "type": "array",
+        "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "date": { "type": "string" },
+            "total": { "type": "number" },
+            "article_count": { "type": "number", "format": "int64" },
+            "status": { "type": "string" },
+            "products": { "$ref": "../products/schema.json#/products" },
+            "shipping_address": { "$ref": "../addresses/schema.json#/address" },
+            "billing_address": { "$ref": "../addresses/schema.json#/address" }
+        }
+    },
+    "orders": { 
+        "type": "array",
+        "items": { "$ref": "#/order" },
+        "uniqueItems": true
+    },
+    "responseOrder": {
+        "allOf" : [
+            { "$ref": "../utils/schema.json#/response" },
+            {
+                "properties": {
+                    "data": { "$ref": "#/order" }
+                }
+            }
+        ]
+    },
+    "responseOrders": {
+        "allOf" : [
+            { "$ref": "../utils/schema.json#/response" },
+            {
+                "properties": {
+                    "data": { "$ref": "#/orders" }
+                }
+            }
+        ]
+    }
+}

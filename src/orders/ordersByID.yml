@@ -1,0 +1,69 @@
+get:
+  summary: ritorna ordine da ID
+  description: ritorna i dettagli di un ordine passando il suo ID
+  operationId: getOrderByID
+  tags:
+    - sellers
+    - customers
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT del venditore/cliente
+      schema:
+        type: string
+      required: true
+    - in: path
+      name: id
+      description: ID dell'ordine richiesto
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: dettagli ordine
+      content:
+        application/json:
+          schema:
+            $ref: "schema.json#/responseOrder"
+          example:
+            {
+              status: "success",
+              data:
+              {
+                id: "1", # TODO
+                date: "2021-03-17",
+                state: "pending",
+                products:
+                  [
+                    {
+                      name: "product 1",
+                      price: 50,
+                      quantity: 10
+                    },
+                    {
+                      name: "product 2",
+                      price: 20,
+                      quantity: 5
+                    }
+                  ],
+                total: 600,
+                shipping_address:
+                  {
+                    recipientName: "Mario",
+                    recipientSurname: "Rossi",
+                    address: "Via Roma 12/A",
+                    city: "Padova",
+                    code: "35100",
+                    district: "PD",
+                  },
+                billing_address:
+                  {
+                    recipientName: "Mario",
+                    recipientSurname: "Rossi",
+                    address: "Via Paolotti 12/A",
+                    city: "Treviso",
+                    code: "35101",
+                    district: "TV",
+                  }
+              }
+            }

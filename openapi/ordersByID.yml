@@ -24,7 +24,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "schema.json#/responseOrder"
+            $ref: "../schemas/orders.json#/responseOrder"
           example:
             {
               status: "success",

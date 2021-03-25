@@ -1,5 +1,5 @@
 {
-    "$id": "src/orders/schema.json",
+    "$id": "schemas/orders.json",
     "order": {
         "type": "array",
         "properties": {
@@ -8,9 +8,9 @@
             "total": { "type": "number" },
             "article_count": { "type": "number", "format": "int64" },
             "status": { "type": "string" },
-            "products": { "$ref": "../products/schema.json#/products" },
-            "shipping_address": { "$ref": "../addresses/schema.json#/address" },
-            "billing_address": { "$ref": "../addresses/schema.json#/address" }
+            "products": { "type": "object" }, // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verranno messi effettivamente i prodotti nel formato corretto?
+            "shipping_address": { "type": "object" }, // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verrà messo effettivamente un indirizzo nel formato corretto?
+            "billing_address": { "type": "object" } // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verrà messo effettivamente un indirizzo nel formato corretto?
         }
     },
     "orders": { 
@@ -20,7 +20,7 @@
     },
     "responseOrder": {
         "allOf" : [
-            { "$ref": "../utils/schema.json#/response" },
+            { "$ref": "../schemas/response.json#/response" },
             {
                 "properties": {
                     "data": { "$ref": "#/order" }
@@ -30,7 +30,7 @@
     },
     "responseOrders": {
         "allOf" : [
-            { "$ref": "../utils/schema.json#/response" },
+            { "$ref": "../schemas/response.json#/response" },
             {
                 "properties": {
                     "data": { "$ref": "#/orders" }

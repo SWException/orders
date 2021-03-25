@@ -17,7 +17,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "schema.json#/responseOrders"
+            $ref: "../schemas/orders.json#/responseOrders"
           example:
             {
               status: "success",
@@ -63,7 +63,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: "schema.json#/placeOrder"
+          $ref: "../schemas/orders.json#/placeOrder"
         example:
           {
             user_id: "1",
@@ -108,7 +108,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../utils/schema.json#/response"
+            $ref: "../schemas/response.json#/response"
           example:
             {
               status: "success",

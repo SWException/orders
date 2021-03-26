@@ -3,7 +3,7 @@ get:
   description: ritorna la lista di tutti gli ordini effettuati se il JWT è di un venditore
   operationId: getOrders
   tags:
-    - sellers
+    - orders
   parameters:
     - in: header
       name: Authorization
@@ -64,7 +64,7 @@ post:
   description: genera un nuovo ordine a partire da un carrello
   operationId: placeOrder
   tags:
-    - guest
+    - orders
   parameters:
     - in: header
       name: Authorization

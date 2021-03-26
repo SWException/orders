@@ -3,8 +3,7 @@ get:
   description: ritorna i dettagli di un ordine passando il suo ID
   operationId: getOrderByID
   tags:
-    - sellers
-    - customers
+    - orders
   parameters:
     - in: header
       name: Authorization

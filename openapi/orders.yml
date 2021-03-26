@@ -11,6 +11,12 @@ get:
       schema:
         type: string
       required: true
+    - in: query
+      name: status
+      description: filtro stati ordini (se venditore)
+      schema:
+        type: string
+      required: false
   responses:
     200:
       description: lista ordini
@@ -23,28 +29,36 @@ get:
               status: "success",
               data: [
                 {
-                  order_id: "1", # TODO definizione UUID ordini
+                  orderId: "1",
                   date: "2021-03-17",
                   total: 10,
-                  article_count: 3,
-                  status: "pending"
+                  articleCount: 3,
+                  status: "payed"
                 },
                 {
-                  order_id: "2", # TODO
+                  orderId: "2",
                   date: "2021-03-16",
                   total: 20,
-                  article_count: 5,
+                  articleCount: 5,
                   status: "shipped"
                 },
                 {
-                  order_id: "3", # TODO
+                  orderId: "3",
                   date: "2021-03-15",
                   total: 10,
-                  article_count: "2",
+                  articleCount: "2",
                   status: "cancelled"
                 }
               ]
             }
+    400:
+      description: "ordine non ritornato"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "error", message: "richiesta fallita" }
+
 post:
   summary: genera ordine
   description: genera un nuovo ordine a partire da un carrello
@@ -54,7 +68,7 @@ post:
   parameters:
     - in: header
       name: Authorization
-      description: token JWT del venditore/cliente
+      description: token JWT del cliente
       schema:
         type: string
       required: true
@@ -66,40 +80,40 @@ post:
           $ref: "../schemas/orders.json#/placeOrder"
         example:
           {
-            user_id: "1",
+            userId: "1",
             products: # lista prodotti acquistati
-            [
+              [
+                {
+                  id: "prodotto1",
+                  name: "prodotto 1",
+                  price: 3,
+                  quantity: 5
+                },
+                {
+                  id: "prodotto2",
+                  name: "prodotto 2",
+                  price: 1,
+                  quantity: 3
+                }
+              ],
+            shippingAddress:
               {
-                id: "prodotto1",
-                name: "prodotto 1",
-                price: 3,
-                quantity: 5
+                recipientName: "donald",
+                recipientSurname: "duck",
+                address: "Via Portesin 18",
+                city: "Padova",
+                code: "35131",
+                district: "PD"
               },
+            billingAddress:
               {
-                id: "prodotto2",
-                name: "prodotto 2",
-                price: 1,
-                quantity: 3
-              }
-            ],
-            shipping_address:
-            {
-              recipientName: "donald",
-              recipientSurname: "duck",
-              address: "Via Portesin 18",
-              city: "Padova",
-              code: "35131",
-              district: "PD"
-            },
-            billing_address:
-            {
-              recipientName: "donald",
-              recipientSurname: "duck",
-              address: "Via Portesin 18",
-              city: "Padova",
-              code: "35131",
-              district: "PD"
-            },
+                recipientName: "donald",
+                recipientSurname: "duck",
+                address: "Via Portesin 18",
+                city: "Padova",
+                code: "35131",
+                district: "PD"
+              },
             status: "payed",
           }
   responses:
@@ -113,4 +127,15 @@ post:
             {
               status: "success",
               message: "ordine inserito con successo"
+            }
+    400:
+      description: ordine non inserito
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example:
+            {
+              status: "error",
+              message: "ordine non inserito"
             }

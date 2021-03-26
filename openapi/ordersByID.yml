@@ -29,41 +29,50 @@ get:
             {
               status: "success",
               data:
-              {
-                id: "1", # TODO
-                date: "2021-03-17",
-                state: "pending",
-                products:
-                  [
+                {
+                  id: "1",
+                  date: "2021-03-17",
+                  state: "pending",
+                  products:
+                    [
+                      {
+                        id: "prodotto1",
+                        name: "product 1",
+                        price: 50,
+                        quantity: 10
+                      },
+                      {
+                        id: "prodotto2",
+                        name: "product 2",
+                        price: 20,
+                        quantity: 5
+                      }
+                    ],
+                  total: 600,
+                  shippingAddress:
                     {
-                      name: "product 1",
-                      price: 50,
-                      quantity: 10
+                      recipientName: "Mario",
+                      recipientSurname: "Rossi",
+                      address: "Via Roma 12/A",
+                      city: "Padova",
+                      code: "35100",
+                      district: "PD",
                     },
+                  billingAddress:
                     {
-                      name: "product 2",
-                      price: 20,
-                      quantity: 5
+                      recipientName: "Mario",
+                      recipientSurname: "Rossi",
+                      address: "Via Paolotti 12/A",
+                      city: "Treviso",
+                      code: "35101",
+                      district: "TV",
                     }
-                  ],
-                total: 600,
-                shipping_address:
-                  {
-                    recipientName: "Mario",
-                    recipientSurname: "Rossi",
-                    address: "Via Roma 12/A",
-                    city: "Padova",
-                    code: "35100",
-                    district: "PD",
-                  },
-                billing_address:
-                  {
-                    recipientName: "Mario",
-                    recipientSurname: "Rossi",
-                    address: "Via Paolotti 12/A",
-                    city: "Treviso",
-                    code: "35101",
-                    district: "TV",
-                  }
-              }
+                }
             }
+    400:
+      description: "ordine non ritornato"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "error", message: "richiesta fallita" }

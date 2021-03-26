@@ -6,11 +6,11 @@
             "id": { "type": "string", "minLength": 1 },
             "date": { "type": "string" },
             "total": { "type": "number" },
-            "article_count": { "type": "number", "format": "int64" },
+            "articleCount": { "type": "number", "format": "int64" },
             "status": { "type": "string" },
-            "products": { "type": "object" }, // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verranno messi effettivamente i prodotti nel formato corretto?
-            "shipping_address": { "type": "object" }, // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verrà messo effettivamente un indirizzo nel formato corretto?
-            "billing_address": { "type": "object" } // Come facciamo con i riferimenti? Mettiamo che è un object generico fidandoci che verrà messo effettivamente un indirizzo nel formato corretto?
+            "products": { "type": "object" },
+            "shippingAddress": { "type": "object" }, 
+            "billingAddress": { "type": "object" }
         }
     },
     "orders": { 
@@ -35,6 +35,14 @@
                 "properties": {
                     "data": { "$ref": "#/orders" }
                 }
+            }
+        ]
+    },
+    "placeOrder": {
+        "allOf" : [
+            { "$ref": "#/order" },
+            {
+                "required": ["id", "date", "total", "articleCount", "status", "products", "shippingAddress", "billingAddress"]
             }
         ]
     }

@@ -6,7 +6,7 @@
     "test": "jest --silent --collect-coverage",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
-    "build-openapi": "swagger-cli bundle openapi.yml --outfile _build/openapi.yml --type yaml"
+    "build-openapi": "swagger-cli bundle openapi/openapi.yml --outfile _build/openapi.yml --type yaml"
   },
   "dependencies": {
     "@babel/core": "^7.13.8",

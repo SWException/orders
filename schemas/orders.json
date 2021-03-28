@@ -1,7 +1,7 @@
 {
     "$id": "schemas/orders.json",
     "order": {
-        "type": "array",
+        "type": "object",
         "properties": {
             "id": { "type": "string", "minLength": 1 },
             "date": { "type": "string" },

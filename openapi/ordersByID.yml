@@ -1,6 +1,6 @@
 get:
-  summary: ritorna ordine da ID
-  description: ritorna i dettagli di un ordine passando il suo ID
+  summary: Get order
+  description: Return details of the order associated with the passed ID
   operationId: getOrderByID
   tags:
     - orders
@@ -19,7 +19,7 @@ get:
       required: true
   responses:
     200:
-      description: dettagli ordine
+      description: "order details"
       content:
         application/json:
           schema:
@@ -69,7 +69,7 @@ get:
                 }
             }
     400:
-      description: "ordine non ritornato"
+      description: "request error"
       content:
         application/json:
           schema:

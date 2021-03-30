@@ -1,6 +1,6 @@
 get:
-  summary: ritorna ordini
-  description: ritorna la lista di tutti gli ordini effettuati se il JWT è di un venditore
+  summary: Get orders
+  description: Return the list of all orders iff the token identify a vendor
   operationId: getOrders
   tags:
     - orders
@@ -19,7 +19,7 @@ get:
       required: false
   responses:
     200:
-      description: lista ordini
+      description: "order list"
       content:
         application/json:
           schema:
@@ -52,7 +52,7 @@ get:
               ]
             }
     400:
-      description: "ordine non ritornato"
+      description: "request error"
       content:
         application/json:
           schema:
@@ -60,8 +60,8 @@ get:
           example: { status: "error", message: "richiesta fallita" }
 
 post:
-  summary: genera ordine
-  description: genera un nuovo ordine a partire da un carrello
+  summary: Place order
+  description: Generate a new order starting from a cart
   operationId: placeOrder
   tags:
     - orders
@@ -118,7 +118,7 @@ post:
           }
   responses:
     200:
-      description: ordine inserito con successo
+      description: "order placed"
       content:
         application/json:
           schema:
@@ -129,7 +129,7 @@ post:
               message: "ordine inserito con successo"
             }
     400:
-      description: ordine non inserito
+      description: "request error"
       content:
         application/json:
           schema:

@@ -1,0 +1,15 @@
+{
+    "id": "schemas/checkout.json",
+    "startCheckout": {
+        "type": "object",
+        "properties": {
+            "shippingAddress": {
+                "type": "string"
+            },
+            "billingAddress": {
+                "type": "string"
+            }
+        },
+        "required": ["shippingAddress","billingAddress"]
+    }
+}

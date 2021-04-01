@@ -1,6 +1,6 @@
 get:
   summary: Get orders
-  description: Return the list of all orders iff the token identify a vendor
+  description: Return the list of all orders iff the token identify a vendor, else return order of the customer
   operationId: getOrders
   tags:
     - orders
@@ -58,84 +58,3 @@ get:
           schema:
             $ref: "../schemas/response.json#/response"
           example: { status: "error", message: "richiesta fallita" }
-
-post:
-  summary: Place order
-  description: Generate a new order starting from a cart
-  operationId: placeOrder
-  tags:
-    - orders
-  parameters:
-    - in: header
-      name: Authorization
-      description: token JWT del cliente
-      schema:
-        type: string
-      required: true
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: "../schemas/orders.json#/placeOrder"
-        example:
-          {
-            userId: "1",
-            products: # lista prodotti acquistati
-              [
-                {
-                  id: "prodotto1",
-                  name: "prodotto 1",
-                  price: 3,
-                  quantity: 5
-                },
-                {
-                  id: "prodotto2",
-                  name: "prodotto 2",
-                  price: 1,
-                  quantity: 3
-                }
-              ],
-            shippingAddress:
-              {
-                recipientName: "donald",
-                recipientSurname: "duck",
-                address: "Via Portesin 18",
-                city: "Padova",
-                code: "35131",
-                district: "PD"
-              },
-            billingAddress:
-              {
-                recipientName: "donald",
-                recipientSurname: "duck",
-                address: "Via Portesin 18",
-                city: "Padova",
-                code: "35131",
-                district: "PD"
-              },
-            status: "payed",
-          }
-  responses:
-    200:
-      description: "order placed"
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/response.json#/response"
-          example:
-            {
-              status: "success",
-              message: "ordine inserito con successo"
-            }
-    400:
-      description: "request error"
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/response.json#/response"
-          example:
-            {
-              status: "error",
-              message: "ordine non inserito"
-            }

@@ -4,6 +4,8 @@
         "type": "object",
         "properties": {
             "id": { "type": "string", "minLength": 1 },
+            "customerName": { "type": "string" },
+            "customer": { "type": "object" },
             "date": { "type": "string" },
             "total": { "type": "number" },
             "articleCount": { "type": "number", "format": "int64" },

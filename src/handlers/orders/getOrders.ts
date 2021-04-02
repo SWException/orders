@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import Order from 'src/Order';
 import API_RESPONSES from "src/utils/apiResponses";
 import User from 'src/User';
-import { getTokenFromEvent } from "src/utils/checkJWT";
+import { getTokenFromEvent } from "src/utils/checkUsers";
 import List from 'typescript.list';
 
 export const HANDLER: APIGatewayProxyHandler = async (event) => {

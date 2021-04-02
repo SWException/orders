@@ -39,6 +39,7 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
     REGION: ${self:provider.region}
+    STRIPE_TOKEN: ${env:STRIPE_TOKEN}
 
   iam:
     role:
@@ -50,26 +51,40 @@ provider:
           Resource: "*"
 
 functions:
-  getOrders:
-    handler: "src/orders/getOrders.HANDLER"
+  # getOrders:
+  #   handler: "src/handlers/orders/getOrders.HANDLER"
+  #   events:
+  #     - http:
+  #         path: /orders
+  #         method: GET
+  #         cors: true
+  # getOrder:
+  #   handler: "src/handlers/orders/getOrderDetails.HANDLER"
+  #   events:
+  #     - http:
+  #         path: /orders/{id}
+  #         method: GET
+  #         cors: true
+  startCheckout:
+    handler: "src/handlers/checkout/startCheckout.HANDLER"
     events:
       - http:
-          path: /orders
-          method: GET
-          cors: true
-  getOrder:
-    handler: "src/orders/getOrderDetails.HANDLER"
-    events:
-      - http:
-          path: /orders/{id}
-          method: GET
-          cors: true
-  placeOrder:
-    handler: "src/orders/placeOrder.HANDLER"
-    events:
-      - http:
-          path: /orders/
+          path: /checkout/
           method: POST
+          cors: true
+  confirmCheckout:
+    handler: "src/handlers/checkout/confirmCheckout.HANDLER"
+    events:
+      - http:
+          path: /checkout/{intent}
+          method: PUT
+          cors: true
+  cancelCheckout:
+    handler: "src/handlers/checkout/cancelCheckout.HANDLER"
+    events:
+      - http:
+          path: /checkout/{intent}
+          method: DELETE
           cors: true
 
 resources:
@@ -109,4 +124,39 @@ resources:
             Projection:
               ProjectionType: "ALL"
         BillingMode: PAY_PER_REQUEST
+    CheckoutTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: checkout
+        AttributeDefinitions:
+          - AttributeName: orderid
+            AttributeType: "S"
+          - AttributeName: userid
+            AttributeType: "S"
+          - AttributeName: timestamp
+            AttributeType: "S"
+          - AttributeName: status
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: userid
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: getStatus
+            KeySchema:
+              - AttributeName: status
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: id-index
+            KeySchema:
+              - AttributeName: orderid
+                KeyType: HASH
+            Projection:
+              ProjectionType: "ALL"
+        BillingMode: PAY_PER_REQUEST
+        
               

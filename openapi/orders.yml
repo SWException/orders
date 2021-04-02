@@ -30,20 +30,23 @@ get:
               data: [
                 {
                   orderId: "1",
+                  customerName: "Mario Rossi",
                   date: "2021-03-17",
-                  total: 10,
+                  total: 10.99,
                   articleCount: 3,
                   status: "payed"
                 },
                 {
                   orderId: "2",
+                  customerName: "Mario Rossi",
                   date: "2021-03-16",
-                  total: 20,
+                  total: 20.50,
                   articleCount: 5,
                   status: "shipped"
                 },
                 {
                   orderId: "3",
+                  customerName: "Mario Rossi",
                   date: "2021-03-15",
                   total: 10,
                   articleCount: "2",

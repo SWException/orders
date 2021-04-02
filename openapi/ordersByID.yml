@@ -32,6 +32,11 @@ get:
                   id: "1",
                   date: "2021-03-17",
                   state: "pending",
+                  customer: {
+                    name: "Mario Rossi",
+                    email: "mario.rossi@email.it",
+                    phone: "0491234567"
+                  },
                   products:
                     [
                       {

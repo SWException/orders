@@ -1,9 +1,9 @@
-get:
+post:
   summary: Payment intent request
   # description: richiesta di inizio pagamento passando due indirizzi e token utente
   description: Request to start checkout passing a token, to identify the cart, and two addresses
   tags:
-    - checkout
+    - orders
   operationId: startCheckout
   parameters:
     - in: header
@@ -89,41 +89,4 @@ get:
             {
               status: "error",
               message: "Intent non creato"
-            }
-
-post:
-  summary: Payment succeded
-  description: Call this API after the payment was successful
-  tags:
-    - checkout
-  operationId: completeCheckout
-  parameters:
-    - in: header
-      name: Authorization
-      description: token JWT
-      schema:
-        type: string
-      required: true
-  responses:
-    200:
-      description: "order confirmed"
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/response.json#/response"
-          example:
-            {
-              status: "success",
-              message: "ordine effettuato con successo"
-            }
-    400:
-      description: "error request"
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/response.json#/response"
-          example:
-            {
-              status: "error",
-              message: "ordine non effettuato"
             }

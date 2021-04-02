@@ -46,13 +46,15 @@ export default class Model {
 
         const ORDER_ID = INTENT.id;
         this.DATABASE.createOrder(ORDER_ID, USERNAME, SHIPPING, BILLING, CART, this.STATUS[0]);
-        
+
         return INTENT;
     }
 
-    public async confirmCheckout(USERNAME: string, INTENT_ID: string): Promise<boolean> {
+    public async confirmCheckout(USERNAME: string, INTENT_ID: string, TOKEN: string): Promise<boolean> {
         if (await this.PSP.intentIsPaid(INTENT_ID)) {
-            await this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[1]);
+            const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[1]);
+            const PROMISE_CART = this.SERVICES.deleteCart(TOKEN);
+            await Promise.all([PROMISE_DB, PROMISE_CART])
             return true;
         }
         return false;

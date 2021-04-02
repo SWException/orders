@@ -3,7 +3,7 @@ post:
   # description: richiesta di inizio pagamento passando due indirizzi e token utente
   description: Request to start checkout passing a token, to identify the cart, and two addresses
   tags:
-    - orders
+    - checkout
   operationId: startCheckout
   parameters:
     - in: header

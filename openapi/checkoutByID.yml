@@ -2,7 +2,7 @@ put:
   summary: Payment succeded
   description: Call this API after the payment was successful
   tags:
-    - orders
+    - checkout
   operationId: completeCheckout
   parameters:
     - in: header
@@ -44,7 +44,7 @@ delete:
   summary: Cancel payment intent
   description: Call this API if you want to cancel an order not already paid 
   tags:
-    - orders
+    - checkout
   operationId: cancelCheckout
   parameters:
     - in: header

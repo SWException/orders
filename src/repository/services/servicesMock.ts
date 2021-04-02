@@ -1,6 +1,9 @@
 import Services from "../services";
 
 export default class ServicesMock implements Services {
+    deleteCart(TOKEN: string) {
+        return TOKEN ? true : false;
+    }
     public getCart(TOKEN: string) {
         return TOKEN ? {
             "id": "1",
@@ -27,6 +30,6 @@ export default class ServicesMock implements Services {
             "city": "Padova",
             "code": "35100",
             "district": "PD"
-          } : null;
+        } : null;
     }
 }

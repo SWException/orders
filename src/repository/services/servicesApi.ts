@@ -2,6 +2,23 @@ import fetch from "node-fetch";
 import Services from "../services";
 
 export default class ServicesApi implements Services {
+    public async deleteCart(TOKEN: string): Promise<boolean> {
+        return await fetch(process.env.SERVICES + `/carts/`,{
+            method: 'DELETE',
+            headers: {
+                Authorization: TOKEN
+            }
+        })
+        .then(async responseUser => await responseUser.json())
+        .then(res => {
+            if (res.status == "success")
+                return true;
+            return false;
+        })
+        .catch(() => {
+            return false;
+        })
+    }
     
     public async getCart(TOKEN: string) {
         return await fetch(process.env.SERVICES + `/carts/`,{

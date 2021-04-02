@@ -51,20 +51,20 @@ provider:
           Resource: "*"
 
 functions:
-  # getOrders:
-  #   handler: "src/handlers/orders/getOrders.HANDLER"
-  #   events:
-  #     - http:
-  #         path: /orders
-  #         method: GET
-  #         cors: true
-  # getOrder:
-  #   handler: "src/handlers/orders/getOrderDetails.HANDLER"
-  #   events:
-  #     - http:
-  #         path: /orders/{id}
-  #         method: GET
-  #         cors: true
+  getOrders:
+    handler: "src/handlers/orders/getOrders.HANDLER"
+    events:
+      - http:
+          path: /orders
+          method: GET
+          cors: true
+  getOrder:
+    handler: "src/handlers/orders/getOrderDetails.HANDLER"
+    events:
+      - http:
+          path: /orders/{id}
+          method: GET
+          cors: true
   startCheckout:
     handler: "src/handlers/checkout/startCheckout.HANDLER"
     events:
@@ -90,44 +90,10 @@ functions:
 resources:
   Resources:
     #dynamodb tables
-    OrderTable:
+    OrdersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: order
-        AttributeDefinitions:
-          - AttributeName: orderid
-            AttributeType: "S"
-          - AttributeName: userid
-            AttributeType: "S"
-          - AttributeName: timestamp
-            AttributeType: "S"
-          - AttributeName: status
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: userid
-            KeyType: HASH
-          - AttributeName: timestamp
-            KeyType: RANGE
-        GlobalSecondaryIndexes:
-          - IndexName: getStatus
-            KeySchema:
-              - AttributeName: status
-                KeyType: HASH
-              - AttributeName: timestamp
-                KeyType: RANGE
-            Projection:
-              ProjectionType: "ALL"
-          - IndexName: id-index
-            KeySchema:
-              - AttributeName: orderid
-                KeyType: HASH
-            Projection:
-              ProjectionType: "ALL"
-        BillingMode: PAY_PER_REQUEST
-    CheckoutTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: checkout
+        TableName: orders
         AttributeDefinitions:
           - AttributeName: orderid
             AttributeType: "S"

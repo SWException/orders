@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import Database from "../database";
 
 export default class Dynamo implements Database {
@@ -10,10 +9,32 @@ export default class Dynamo implements Database {
     }
 
     public updateOrderStatus(ORDER_ID: string, STATUS: string) {
+        // TODO
         throw new Error("Method not implemented.");
     }
 
     public updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string) {
+        // TODO
+        throw new Error("Method not implemented.");
+    }
+
+    public getOrdersById(ORDER_ID: string) {
+        // TODO
+        throw new Error("Method not implemented.");
+    }
+
+    public getOrder(USERNAME: string, ORDER_ID: string) {
+        // TODO
+        throw new Error("Method not implemented.");
+    }
+
+    public getOrdersByStatus(STATUS: string) {
+        // TODO
+        throw new Error("Method not implemented.");
+    }
+
+    public getOrdersByUsername(USERNAME: string) {
+        // TODO
         throw new Error("Method not implemented.");
     }
 }

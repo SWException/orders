@@ -1,15 +1,38 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import Order from 'src/Order';
-import API_RESPONSES from "src/utils/apiResponses";
+import Model from 'src/core/model';
+import response from 'src/utils/apiResponses';
+import { checkCustomer, checkVendor } from 'src/utils/checkUsers';
 
 export const HANDLER: APIGatewayProxyHandler = async (event) => {
-    const ORDER_ID = event.pathParameters?.id;
-    if(ORDER_ID == null){
-        return API_RESPONSES._400(null, "error", "manca TOKEN");
+    const TOKEN: string = event.headers?.Authorization;
+    if (TOKEN == null) {
+        return response(400, "missing token");
     }
-    const ORDER = await Order.getOrderDetails(ORDER_ID);
-    if(ORDER == null){
-        return API_RESPONSES._400(null, "error", "ordine non esistente");
+
+    const ORDER_ID: string = event.pathParameters?.id;
+    if (ORDER_ID == null) {
+        return response(400, "missing id order");
     }
-    return API_RESPONSES._200(null,"success",JSON.stringify(ORDER.getJson()));
+
+    const MODEL: Model = Model.createModel();
+    let order;
+
+    const USERNAME: string = await checkCustomer(TOKEN);
+    if (!USERNAME) {
+        const USERNAME: string = await checkVendor(TOKEN);
+        if (!USERNAME) {
+            return response(401, "Token not valid");
+        }
+        order = await MODEL.getOrderForVendor(ORDER_ID);
+    }else{
+        order = await MODEL.getOrder(USERNAME, ORDER_ID);
+    }
+    
+    if (!order){
+        return response(404, "Order not found");
+    }
+
+    return response(200, null, order);
+
 }
+

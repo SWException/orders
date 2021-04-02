@@ -18,7 +18,7 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
         return response(400, "Intent id required!");
     }
     const MODEL: Model = Model.createModel();
-    const PAID: boolean = await MODEL.confirmCheckout(USERNAME, INTENT_ID);
+    const PAID: boolean = await MODEL.confirmCheckout(USERNAME, INTENT_ID, TOKEN);
 
     if (!PAID){
         return response(402, "Payment not confirmed");

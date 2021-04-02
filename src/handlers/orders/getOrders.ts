@@ -1,32 +1,41 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import Order from 'src/Order';
-import API_RESPONSES from "src/utils/apiResponses";
-import User from 'src/User';
-import { getTokenFromEvent } from "src/utils/checkUsers";
-import List from 'typescript.list';
+import Model from 'src/core/model';
+import response from 'src/utils/apiResponses';
+import { checkCustomer, checkVendor } from 'src/utils/checkUsers';
 
 export const HANDLER: APIGatewayProxyHandler = async (event) => {
-    const TOKEN = getTokenFromEvent(event);
-    if(TOKEN == null) {
-        return API_RESPONSES._400(null, "error", "manca token");
+    const TOKEN: string = event.headers?.Authorization;
+    if (TOKEN == null) {
+        return response(400, "missing token");
     }
-    const USER: User = await User.createUser(TOKEN);
-    if (USER && USER.isAuthenticate()) {
-        let orders: List<Order> = null;
-        if(USER.isClient()){
-            orders = await Order.getOrdersGuest(USER.getUsername());
+
+    const MODEL: Model = Model.createModel();
+    let orders;
+
+    const USERNAME: string = await checkCustomer(TOKEN);
+    if (!USERNAME) {
+        const USERNAME: string = await checkVendor(TOKEN);
+        if (!USERNAME) {
+            return response(401, "Token not valid");
         }
-        else {
-            orders = await Order.getOrdersSeller();
+
+        const STATUS: string = event.queryStringParameters?.status;
+        if (STATUS == null) {
+            return response(400, "missing status");
         }
-        let tmp = "";
-        orders.forEach((order) =>{
-            tmp += JSON.stringify(order.getJson());
-        });
-        if(tmp == ""){
-            return API_RESPONSES._200(null, "success", "nessun ordine");
-        }
-        return API_RESPONSES._200(null, "success", tmp);
+
+        orders = await MODEL.getOrdersForVendor(STATUS);
     }
-    return API_RESPONSES._400(null, "error", "utente non valido");
+    else{
+        orders = await MODEL.getOrders(USERNAME);
+    }
+
+
+    if (!orders) {
+        return response(200, "No orders yet");
+    }
+
+    return response(200, null, orders);
+
 }
+

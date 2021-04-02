@@ -78,6 +78,6 @@ export default class Model {
     }
 
     public async getOrderForVendor(ORDER_ID: string) {
-        return this.DATABASE.getOrdersById(ORDER_ID);
+        return this.DATABASE.getOrderById(ORDER_ID);
     }
 }

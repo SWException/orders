@@ -14,7 +14,7 @@ export default class DbMock implements Database {
         throw new Error("Method not implemented.");
     }
 
-    public getOrdersById(ORDER_ID: string) {
+    public getOrderById(ORDER_ID: string) {
         // TODO
         throw new Error("Method not implemented.");
     }

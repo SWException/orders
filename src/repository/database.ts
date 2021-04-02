@@ -1,5 +1,5 @@
 export default interface Database {
-    getOrdersById(ORDER_ID: string);
+    getOrderById(ORDER_ID: string);
     getOrder(USERNAME: string, ORDER_ID: string);
     getOrdersByStatus(STATUS: string);
     getOrdersByUsername(USERNAME: string);

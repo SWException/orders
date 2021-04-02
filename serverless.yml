@@ -109,7 +109,7 @@ resources:
           - AttributeName: timestamp
             KeyType: RANGE
         GlobalSecondaryIndexes:
-          - IndexName: getStatus
+          - IndexName: status-index
             KeySchema:
               - AttributeName: status
                 KeyType: HASH

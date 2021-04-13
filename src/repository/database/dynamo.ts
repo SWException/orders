@@ -10,13 +10,13 @@ export default class Dynamo implements Database {
             TableName: Dynamo.TABLE_NAME,
             Key: {
                 userid: USERNAME,
-                orderid: ORDER_ID
+                timestamp: Date.now()
             },
             Item: {
-                timestamp: Date.now(),
                 shippingAddress: SHIPPING,
                 billingAddress: BILLING,
                 cart: CART,
+                orderid: ORDER_ID,
                 status: STATUS
             }
         };
@@ -70,28 +70,31 @@ export default class Dynamo implements Database {
 
     public async getOrderById(ORDER_ID: string) {
         const PARAMS = {
-            Key: {
-                orderid: ORDER_ID
-            },
             TableName: Dynamo.TABLE_NAME,
-            IndexName: "id-index"
+            IndexName: "id-index",
+            KeyConditionExpression: "orderid = :order",
+            ExpressionAttributeValues: {
+                ":order": ORDER_ID
+            },
         };
 
-        const DATA = await Dynamo.DOCUMENT_CLIENT.get(PARAMS).promise();
-        return AWS.DynamoDB.Converter.unmarshall(DATA.Item)
+        const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
+        return DATA.Items.pop();
     }
 
     public async getOrder(USERNAME: string, ORDER_ID: string) {
         const PARAMS = {
-            Key: {
-                userid: USERNAME,
-                orderid: ORDER_ID
+            TableName: Dynamo.TABLE_NAME,
+            IndexName: "user-index",
+            KeyConditionExpression: "userid = :user and orderid = :order",
+            ExpressionAttributeValues: {
+                ":user": USERNAME,
+                ":order": ORDER_ID
             },
-            TableName: Dynamo.TABLE_NAME
         };
 
-        const DATA = await Dynamo.DOCUMENT_CLIENT.get(PARAMS).promise();
-        return AWS.DynamoDB.Converter.unmarshall(DATA.Item)
+        const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
+        return DATA.Items.pop();
     }
 
     public async getOrdersByStatus(STATUS: string) {
@@ -111,9 +114,9 @@ export default class Dynamo implements Database {
 
     public async getOrdersByUsername(USERNAME: string) {
         const PARAMS = {
-            KeyConditionExpression: 'userid = :userid',
+            KeyConditionExpression: 'userid = :username',
             ExpressionAttributeValues: {
-                ":userid": USERNAME
+                ":username": USERNAME
             },
             TableName: Dynamo.TABLE_NAME,
             ScanIndexForward: false

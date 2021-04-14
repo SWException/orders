@@ -1,0 +1,34 @@
+patch:
+  summary: Refund order
+  description: Refund all the amount of an order
+  operationId: refundOrderByID
+  tags:
+    - orders
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT del venditore
+      schema:
+        type: string
+      required: true
+    - in: path
+      name: id
+      description: order ID
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: "order refunded"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "success", message: "ordine rimborsato completamente" }
+    400:
+      description: "request error"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "error", message: "richiesta fallita" }

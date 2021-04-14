@@ -2,8 +2,8 @@ import fetch from "node-fetch";
 import Services from "../services";
 
 export default class ServicesApi implements Services {
-    public async deleteCart(TOKEN: string): Promise<boolean> {
-        return await fetch(process.env.SERVICES + `/carts/`,{
+    public async deleteCart(TOKEN: string): Promise<void> {
+        return await fetch(process.env.SERVICES + `/cart/`,{
             method: 'DELETE',
             headers: {
                 Authorization: TOKEN
@@ -12,16 +12,16 @@ export default class ServicesApi implements Services {
         .then(async responseUser => await responseUser.json())
         .then(res => {
             if (res.status == "success")
-                return true;
-            return false;
+                return;
+            throw new Error((res?.message)? res.message : "Cart error");
         })
-        .catch(() => {
-            return false;
+        .catch((err: Error) => {
+            throw new Error("Error deleting cart. Details: " + err.message);
         })
     }
     
-    public async getCart(TOKEN: string) {
-        return await fetch(process.env.SERVICES + `/carts/`,{
+    public async getCart(TOKEN: string): Promise<any> {
+        return await fetch(process.env.SERVICES + `/cart/`,{
             method: 'GET',
             headers: {
                 Authorization: TOKEN
@@ -31,14 +31,14 @@ export default class ServicesApi implements Services {
         .then(res => {
             if (res.status == "success")
                 return res.data;
-            return null;
+            throw new Error((res?.message)? res.message : "Cart error");
         })
-        .catch(() => {
-            return null;
+        .catch((err: Error) => {
+            throw new Error("Error fetching cart. Details: " + err.message);
         })
     }
 
-    public async getAddress(SHIPPING_ID: string, TOKEN: string) {
+    public async getAddress(SHIPPING_ID: string, TOKEN: string): Promise<any> {
         return await fetch(process.env.SERVICES + `/addresses/${SHIPPING_ID}`,{
             method: 'GET',
             headers: {
@@ -49,10 +49,10 @@ export default class ServicesApi implements Services {
         .then(res => {
             if (res.status == "success")
                 return res.data;
-            return null;
+            throw new Error((res?.message)? res.message : "Addresses error");
         })
-        .catch(() => {
-            return null;
+        .catch((err: Error) => {
+            throw new Error("Error fetching address. Details: " + err.message);
         })
     }
 }

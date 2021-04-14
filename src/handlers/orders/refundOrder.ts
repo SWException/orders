@@ -8,21 +8,21 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
         return response(400, "missing token");
     }
 
-    const INTENT_ID = event.pathParameters?.intent;
-    if (!(INTENT_ID)) {
-        return response(400, "Intent id required!");
+    const ORDER_ID: string = event.pathParameters?.id;
+    if (ORDER_ID == null) {
+        return response(400, "missing id order");
     }
 
     const MODEL: Model = Model.createModel();
-    return await MODEL.confirmCheckout(TOKEN, INTENT_ID)
-        .then(IS_PAID => {
-            if (IS_PAID)
-                return response(200, "Order confirmed");
-            return response(402, "Payment not confirmed");
-
+    return await MODEL.refundOrder(TOKEN, ORDER_ID)
+        .then(IS_REFUNDED => {
+            if (IS_REFUNDED)
+                return response(200, "Order refunded");
+            return response(400, "Order NOT refunded");
         })
         .catch((err: Error) => {
             return response(400, err.message);
         });
+
 }
 

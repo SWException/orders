@@ -13,7 +13,7 @@ get:
       required: true
     - in: path
       name: id
-      description: ID dell'ordine richiesto
+      description: order ID
       schema:
         type: string
       required: true
@@ -73,6 +73,41 @@ get:
                     }
                 }
             }
+    400:
+      description: "request error"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "error", message: "richiesta fallita" }
+
+patch:
+  summary: Update status
+  description: Update the status of the order
+  operationId: updateOrderByID
+  tags:
+    - orders
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT del venditore
+      schema:
+        type: string
+      required: true
+    - in: path
+      name: id
+      description: order ID
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: "order updated"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example: { status: "success", message: "stato dell'ordine aggiornato" }
     400:
       description: "request error"
       content:

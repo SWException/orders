@@ -1,4 +1,4 @@
-put:
+patch:
   summary: Payment succeded
   description: Call this API after the payment was successful
   tags:

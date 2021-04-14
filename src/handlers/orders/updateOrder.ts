@@ -13,16 +13,20 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
         return response(400, "missing id order");
     }
 
+    const STATUS: string = event.pathParameters?.id;
+    if (STATUS == null) {
+        return response(400, "missing new order status");
+    }
+
     const MODEL: Model = Model.createModel();
-    return await MODEL.getOrder(TOKEN, ORDER_ID)
-        .then(ORDER => {
-            if (ORDER)
-                return response(200, null, ORDER);
-            return response(404, "Order not found");
+    return await MODEL.updateOrderStatus(TOKEN, ORDER_ID, STATUS)
+        .then(IS_UPDATED => {
+            if (IS_UPDATED)
+                return response(200, "Order status updated");
+            return response(400, "Order status NOT updated");
         })
         .catch((err: Error) => {
             return response(400, err.message);
         });
-
 }
 

@@ -1,36 +1,43 @@
 import Database from "../database";
 
 export default class DbMock implements Database {
-    public updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string) {
+        if(USERNAME && ORDER_ID && STATUS)
+            return;
+        throw new Error("Missing some parameters");
     }
-    public updateOrderStatus(ORDER_ID: string, STATUS: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async updateOrderStatusById(ORDER_ID: string, STATUS: string) {
+        if(ORDER_ID && STATUS)
+            return;
+        throw new Error("Missing some parameters");
     }
-    public createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string) {
-        // TODO
-        throw new Error("Method not implemented.");
-    }
-
-    public getOrderById(ORDER_ID: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string) {
+        if(ORDER_ID && USERNAME && SHIPPING && BILLING && CART && STATUS)
+            return;
+        throw new Error("Missing some parameters");
     }
 
-    public getOrder(USERNAME: string, ORDER_ID: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async getOrderById(ORDER_ID: string) {
+        if(ORDER_ID)
+            return true;
+        throw new Error("Missing some parameters");
     }
 
-    public getOrdersByStatus(STATUS: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async getOrder(USERNAME: string, ORDER_ID: string) {
+        if(USERNAME && ORDER_ID)
+            return true;
+        throw new Error("Missing some parameters");
     }
 
-    public getOrdersByUsername(USERNAME: string) {
-        // TODO
-        throw new Error("Method not implemented.");
+    public async getOrdersByStatus(STATUS: string) {
+        if(STATUS)
+            return true;
+        throw new Error("Missing some parameters");
+    }
+
+    public async getOrdersByUsername(USERNAME: string) {
+        if(USERNAME)
+            return true;
+        throw new Error("Missing some parameters");
     }
 }

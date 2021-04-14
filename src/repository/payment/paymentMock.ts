@@ -1,16 +1,17 @@
 import Payment from "../payment";
 
 export default class PaymentMock implements Payment {
-    cancelIntent(INTENT_ID: string) {
-        // TODO
+    public async cancelIntent(INTENT_ID: string) {
         return INTENT_ID ? true : false
     }
-    intentIsPaid(INTENT_ID: string) {
-        // TODO
+    public async intentIsPaid(INTENT_ID: string) {
         return INTENT_ID ? true : false;
     }
-    createIntent(AMOUNT: number, USERNAME: string) {
+    public async createIntent(AMOUNT: number, USERNAME: string) {
         // TODO
         return AMOUNT && USERNAME ? null : null;
+    }
+    public async refundIntent(INTENT_ID: string): Promise<any> {
+        return INTENT_ID ? true : false
     }
 }

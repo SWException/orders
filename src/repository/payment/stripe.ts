@@ -1,5 +1,5 @@
 import Payment from "../payment";
-import STRIPE_PSP from 'stripe';
+import {Stripe as STRIPE_PSP} from 'stripe';
 const STRIPE = new STRIPE_PSP (
     process.env.STRIPE_TOKEN,
     {
@@ -8,7 +8,7 @@ const STRIPE = new STRIPE_PSP (
 );
 
 export default class Stripe implements Payment {
-    public async createIntent(AMOUNT: number, USERNAME: string) {
+    public async createIntent(AMOUNT: number, USERNAME: string): Promise<any>  {
         const INTENT = await STRIPE.paymentIntents.create({
             amount: AMOUNT * 100,
             currency: 'eur',
@@ -29,5 +29,20 @@ export default class Stripe implements Payment {
     public async cancelIntent(INTENT_ID: string): Promise<boolean> {
         const INTENT = await STRIPE.paymentIntents.cancel(INTENT_ID);
         return (INTENT.status == "canceled")
+    }
+
+    public async refundIntent(INTENT_ID: string, AMOUNT?: number): Promise<any> {
+        const PARAMS = {
+            payment_intent: INTENT_ID,
+        }
+
+        if(AMOUNT){
+            // Nel caso di rimborso parziale
+            PARAMS["amount"] = AMOUNT;
+        }
+
+        const REFOUND = await STRIPE.refunds.create(PARAMS);
+
+        return (REFOUND.status == "succeeded"); // CAN BE PENDING
     }
 }

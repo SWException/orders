@@ -5,7 +5,7 @@ export default class Dynamo implements Database {
     private static readonly TABLE_NAME = "orders";
     private static readonly DOCUMENT_CLIENT = new AWS.DynamoDB.DocumentClient({ region: "eu-central-1" });
 
-    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string) {
+    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Key: {
@@ -17,46 +17,28 @@ export default class Dynamo implements Database {
                 billingAddress: BILLING,
                 cart: CART,
                 orderid: ORDER_ID,
-                status: STATUS
+                orderStatus: STATUS
             }
         };
 
-        const DATA = Dynamo.DOCUMENT_CLIENT.put(PARAMS)
+        const DATA = await Dynamo.DOCUMENT_CLIENT.put(PARAMS)
             .promise()
-            .catch(() => {
+            .catch((err) => {
+                console.error("createOrder", err);
                 return false;
             });
 
         return (DATA) ? true : false;
     }
 
-    public async updateOrderStatus(ORDER_ID: string, STATUS: string) {
-        const PARAMS = {
-            TableName: Dynamo.TABLE_NAME,
-            Key: {
-                orderid: ORDER_ID
-            },
-            UpdateExpression: "SET status = :s",
-            ExpressionAttributeValues: {
-                ":s": STATUS
-            },
-            IndexName: "id-index"
-        }
-
-        const DATA = await Dynamo.DOCUMENT_CLIENT.update(PARAMS)
-            .promise()
-            .catch((err) => err);
-        return DATA;
-    }
-
-    public async updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string) {
+    private async updateOrderStatus (USERNAME: string, TIMESTAMP: string, STATUS: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Key: {
                 userid: USERNAME,
-                orderid: ORDER_ID
+                timestamp: TIMESTAMP
             },
-            UpdateExpression: "SET status = :s",
+            UpdateExpression: "SET orderStatus = :s",
             ExpressionAttributeValues: {
                 ":s": STATUS
             }
@@ -64,11 +46,24 @@ export default class Dynamo implements Database {
 
         const DATA = await Dynamo.DOCUMENT_CLIENT.update(PARAMS)
             .promise()
-            .catch((err) => err);
+        
+        console.log("updateCheckoutStatus", DATA);
         return DATA;
     }
 
-    public async getOrderById(ORDER_ID: string) {
+    public async updateOrderStatusById(ORDER_ID: string, STATUS: string): Promise<any> {
+        const ORDER_TO_UPDATE = await this.getOrderById(ORDER_ID);
+        return await this.updateOrderStatus(ORDER_TO_UPDATE.userid, ORDER_TO_UPDATE.timestamp, STATUS);
+    }
+
+    public async updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string): Promise<any> {
+        const ORDER_TO_UPDATE = await this.getOrder(USERNAME, ORDER_ID);
+        console.log("updateCheckoutStatus", ORDER_TO_UPDATE);
+        
+        return await this.updateOrderStatus(USERNAME, ORDER_TO_UPDATE.timestamp, STATUS);
+    }
+
+    public async getOrderById(ORDER_ID: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             IndexName: "id-index",
@@ -82,7 +77,7 @@ export default class Dynamo implements Database {
         return DATA.Items.pop();
     }
 
-    public async getOrder(USERNAME: string, ORDER_ID: string) {
+    public async getOrder(USERNAME: string, ORDER_ID: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             IndexName: "user-index",
@@ -97,11 +92,11 @@ export default class Dynamo implements Database {
         return DATA.Items.pop();
     }
 
-    public async getOrdersByStatus(STATUS: string) {
+    public async getOrdersByStatus(STATUS: string): Promise<any> {
         const PARAMS = {
-            KeyConditionExpression: 'status = :status',
+            KeyConditionExpression: 'orderStatus = :s',
             ExpressionAttributeValues: {
-                ":status": STATUS
+                ":s": STATUS
             },
             TableName: Dynamo.TABLE_NAME,
             ScanIndexForward: false,
@@ -112,7 +107,7 @@ export default class Dynamo implements Database {
         return DATA.Items;
     }
 
-    public async getOrdersByUsername(USERNAME: string) {
+    public async getOrdersByUsername(USERNAME: string): Promise<any> {
         const PARAMS = {
             KeyConditionExpression: 'userid = :username',
             ExpressionAttributeValues: {
@@ -123,7 +118,6 @@ export default class Dynamo implements Database {
         };
 
         const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
-        
         return DATA.Items;
     }
 }

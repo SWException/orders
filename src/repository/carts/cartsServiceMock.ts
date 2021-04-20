@@ -1,6 +1,6 @@
-import Services from "../services";
+import CartsService from "../cartsService";
 
-export default class ServicesMock implements Services {
+export default class CartsServiceMock implements CartsService {
     public async deleteCart(TOKEN: string) {
         if (TOKEN)
             return;
@@ -26,20 +26,5 @@ export default class ServicesMock implements Services {
         } 
         else 
             throw new Error("Error fetching cart");
-    }
-    public async getAddress(SHIPPING_ID: string, TOKEN: string) {
-        if (TOKEN && SHIPPING_ID)
-            return {
-                "id": "1",
-                "description": "Indirizzo Casa",
-                "recipientName": "Mario",
-                "recipientSurname": "Rossi",
-                "address": "Via Roma 12/A",
-                "city": "Padova",
-                "code": "35100",
-                "district": "PD"
-            };
-        else
-            throw new Error("Error fetching address");
     }
 }

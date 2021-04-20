@@ -10,7 +10,7 @@
             "total": { "type": "number" },
             "articleCount": { "type": "number", "format": "int64" },
             "status": { "type": "string" },
-            "products": { "type": "object" },
+            "products": { "type": "array" },
             "shippingAddress": { "type": "object" }, 
             "billingAddress": { "type": "object" }
         }

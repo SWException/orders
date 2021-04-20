@@ -3,10 +3,16 @@ import DbMock from "src/repository/database/dbMock";
 import Dynamo from "src/repository/database/dynamo";
 import Payment from "src/repository/payment";
 import PaymentMock from "src/repository/payment/paymentMock";
-import Stripe from "src/repository/payment/stripe";
-import Services from "src/repository/services";
-import ServicesMock from "src/repository/services/servicesMock";
-import ServicesApi from "src/repository/services/servicesApi";
+import StripeService from "src/repository/payment/stripe";
+import CartsService from "src/repository/cartsService";
+import CartsServiceMock from "src/repository/carts/cartsServiceMock";
+import CartsServiceAPI from "src/repository/carts/cartsServiceApi";
+import AddressesService from "src/repository/addressesService";
+import AddressesServiceMock from "src/repository/addresses/addressesServiceMock";
+import AddressesServiceAPI from "src/repository/addresses/addressesServiceApi";
+import ProductsService from "src/repository/productsService";
+import ProductsServiceMock from "src/repository/products/productsServiceMock";
+import ProductsServiceAPI from "src/repository/products/productsServiceApi";
 import UsersService from "src/repository/usersService";
 import UsersServiceAPI from "src/repository/users/usersServiceApi";
 import UsersServiceMock from "src/repository/users/usersServiceMock";
@@ -22,20 +28,26 @@ export default class Model {
     private readonly DATABASE: Database;
     private readonly PSP: Payment; // Payment Service Provider
     private readonly USERS: UsersService;
-    private readonly SERVICES: Services;
+    private readonly CARTS: CartsService;
+    private readonly ADDRESSES: AddressesService;
+    private readonly PRODUCTS: ProductsService;
 
-    private constructor(db: Database, psp: Payment, users: UsersService, services: Services) {
+    private constructor(db: Database, psp: Payment, users: UsersService, carts: CartsService, addresses: AddressesService, products: ProductsService) {
         this.DATABASE = db;
         this.PSP = psp;
         this.USERS = users;
-        this.SERVICES = services;
+        this.CARTS = carts;
+        this.ADDRESSES = addresses;
+        this.PRODUCTS = products;
     }
 
     public static Builder = class ModelBuilder{
         private db: Database;
         private psp: Payment; 
         private users: UsersService;
-        private services: Services;
+        private carts: CartsService;
+        private addresses: AddressesService;
+        private products: ProductsService;
 
         public withDatabase (db: Database): ModelBuilder{
             this.db = db;
@@ -52,14 +64,24 @@ export default class Model {
             return this;
         }
 
-        public withServices (services: Services): ModelBuilder{
-            this.services = services;
+        public withCartsService (carts: CartsService): ModelBuilder{
+            this.carts = carts;
+            return this;
+        }
+
+        public withAddressesService (addresses: AddressesService): ModelBuilder{
+            this.addresses = addresses;
+            return this;
+        }
+
+        public withProductsService (products: ProductsService): ModelBuilder{
+            this.products = products;
             return this;
         }
 
         public build (): Model {
-            if(this.db && this.psp && this.users && this.services)
-                return new Model(this.db, this.psp, this.users, this.services);
+            if(this.db && this.psp && this.users && this.carts && this.addresses && this.products)
+                return new Model(this.db, this.psp, this.users, this.carts, this.addresses, this.products);
             throw new Error("ModelBuilder: Missing some property");
         }
     };
@@ -68,9 +90,11 @@ export default class Model {
         return new Model
             .Builder()
             .withDatabase(new Dynamo())
-            .withPayment(new Stripe())
+            .withPayment(new StripeService())
             .withUsersService(new UsersServiceAPI())
-            .withServices(new ServicesApi())
+            .withCartsService(new CartsServiceAPI())
+            .withAddressesService(new AddressesServiceAPI())
+            .withProductsService(new ProductsServiceAPI())
             .build();
     }
 
@@ -80,18 +104,20 @@ export default class Model {
             .withDatabase(new DbMock())
             .withPayment(new PaymentMock())
             .withUsersService(new UsersServiceMock())
-            .withServices(new ServicesMock())
+            .withCartsService(new CartsServiceMock())
+            .withAddressesService(new AddressesServiceMock())
+            .withProductsService(new ProductsServiceMock())
             .build();
     }
 
     public async startCheckout(TOKEN: string, SHIPPING_ID: string, BILLING_ID: string): Promise<any> {
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
 
-        const CART_PROMISE = this.SERVICES.getCart(TOKEN);
+        const CART_PROMISE = this.CARTS.getCart(TOKEN);
         const CART = await CART_PROMISE;
 
-        const SHIPPING_PROMISE = this.SERVICES.getAddress(SHIPPING_ID, TOKEN);
-        const BILLING_PROMISE = this.SERVICES.getAddress(BILLING_ID, TOKEN);
+        const SHIPPING_PROMISE = this.ADDRESSES.getAddress(SHIPPING_ID, TOKEN);
+        const BILLING_PROMISE = this.ADDRESSES.getAddress(BILLING_ID, TOKEN);
         const INTENT_PROMISE = this.PSP.createIntent(CART["total"], USERNAME);
 
         const [INTENT, SHIPPING, BILLING] = await Promise.all([INTENT_PROMISE, SHIPPING_PROMISE, BILLING_PROMISE])
@@ -107,8 +133,14 @@ export default class Model {
         const IS_PAID = await this.PSP.intentIsPaid(INTENT_ID)
         if (USERNAME && IS_PAID) {
             const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[2]);
-            const PROMISE_CART = this.SERVICES.deleteCart(TOKEN);
-            await Promise.all([PROMISE_DB, PROMISE_CART])
+            const PROMISE_CART = this.CARTS.deleteCart(TOKEN);
+            const PROMISE_PRODUCTS_UPDATE_STOCK = await this.DATABASE.getOrder(USERNAME, INTENT_ID)
+                .then((ORDER) => {
+                    const PRODUCTS: Array<any> = ORDER["products"];
+                    return PRODUCTS.map((PRODUCT) => this.PRODUCTS.updateStock(PRODUCT["id"], PRODUCT["quantity"], TOKEN));
+                })
+            await Promise.all([PROMISE_DB, PROMISE_CART, ...PROMISE_PRODUCTS_UPDATE_STOCK]);
+
             return true;
         }
         return false;

@@ -9,7 +9,7 @@ export default class PaymentMock implements Payment {
     }
     public async createIntent(AMOUNT: number, USERNAME: string) {
         // TODO
-        return AMOUNT && USERNAME ? null : null;
+        return AMOUNT && USERNAME ? {"id": "INTENT-ID-123456-ABCDEF"} : null;
     }
     public async refundIntent(INTENT_ID: string): Promise<any> {
         return INTENT_ID ? true : false

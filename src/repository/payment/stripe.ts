@@ -1,15 +1,11 @@
 import Payment from "../payment";
-import {Stripe as STRIPE_PSP} from 'stripe';
-const STRIPE = new STRIPE_PSP (
-    process.env.STRIPE_TOKEN,
-    {
-        apiVersion: '2020-08-27'
-    }
-);
+import Stripe from 'stripe';
 
-export default class Stripe implements Payment {
+export default class StripeService implements Payment {
+    private static STRIPE = new Stripe (process.env.STRIPE_TOKEN, { apiVersion: '2020-08-27' });
+
     public async createIntent(AMOUNT: number, USERNAME: string): Promise<any>  {
-        const INTENT = await STRIPE.paymentIntents.create({
+        const INTENT = await StripeService.STRIPE.paymentIntents.create({
             amount: AMOUNT * 100,
             currency: 'eur',
             payment_method_types: ['card'],
@@ -22,12 +18,12 @@ export default class Stripe implements Payment {
     }
 
     public async intentIsPaid(INTENT_ID: string): Promise<boolean> {
-        const INTENT = await STRIPE.paymentIntents.retrieve(INTENT_ID);
+        const INTENT = await StripeService.STRIPE.paymentIntents.retrieve(INTENT_ID);
         return (INTENT.status == "succeeded")
     }
 
     public async cancelIntent(INTENT_ID: string): Promise<boolean> {
-        const INTENT = await STRIPE.paymentIntents.cancel(INTENT_ID);
+        const INTENT = await StripeService.STRIPE.paymentIntents.cancel(INTENT_ID);
         return (INTENT.status == "canceled")
     }
 
@@ -41,7 +37,7 @@ export default class Stripe implements Payment {
             PARAMS["amount"] = AMOUNT;
         }
 
-        const REFOUND = await STRIPE.refunds.create(PARAMS);
+        const REFOUND = await StripeService.STRIPE.refunds.create(PARAMS);
 
         return (REFOUND.status == "succeeded"); // CAN BE PENDING
     }

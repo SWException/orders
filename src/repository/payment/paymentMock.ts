@@ -11,7 +11,7 @@ export default class PaymentMock implements Payment {
         // TODO
         return AMOUNT && USERNAME ? {"id": "INTENT-ID-123456-ABCDEF"} : null;
     }
-    public async refundIntent(INTENT_ID: string): Promise<any> {
+    public async refundIntent(INTENT_ID: string): Promise<boolean> {
         return INTENT_ID ? true : false
     }
 }

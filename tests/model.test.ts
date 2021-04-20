@@ -41,10 +41,10 @@ test('confirmCheckout', async () => {
 });
 
 test('error confirmCheckout', async () => {
+    const RES = await model.confirmCheckout("token", null);
+    expect(RES).toBe(false);
     expect(model.confirmCheckout(null, "intent"))
     .rejects.toThrowError("The token was not valid");
-    expect(model.confirmCheckout("token", null))
-    .rejects.toThrowError();
 });
 
 test('cancelCheckout', async () => {
@@ -53,10 +53,10 @@ test('cancelCheckout', async () => {
 });
 
 test('error cancelCheckout', async () => {
+    const RES = await model.cancelCheckout("token", null);
+    expect(RES).toBe(false);
     expect(model.cancelCheckout(null, "intent"))
     .rejects.toThrowError("The token was not valid");
-    expect(model.cancelCheckout("token", null))
-    .rejects.toThrowError();
 });
 
 test('getOrders', async () => {
@@ -82,19 +82,19 @@ test('error getOrdersForVendor', async () => {
 });
 
 test('getOrder', async () => {
-    const RES = await model.getOrder("token", "order-id");
+    const RES = await model.getOrder("token", "orderId");
     expect(RES).toMatchSchema(ORDER_SCHEMA);
 });
 
 test('error getOrder', async () => {
-    expect(model.getOrder(null, "order-id"))
+    expect(model.getOrder(null, "orderId"))
     .rejects.toThrowError();
     expect(model.getOrder("token", null))
     .rejects.toThrowError();
 });
 
 test('getOrderForVendor', async () => {
-    const RES = await model.getOrder("vendor-token", "order-id");
+    const RES = await model.getOrder("vendor-token", "orderId");
     expect(RES).toMatchSchema(ORDER_SCHEMA);
 });
 
@@ -106,31 +106,31 @@ test('error getOrderForVendor', async () => {
 });
 
 test('updateOrderStatus', async () => {
-    const RES = await model.updateOrderStatus("vendor-token", "intent", "newStatus");
+    const RES = await model.updateOrderStatus("vendor-token", "orderId", "newStatus");
     expect(RES).toBe(true);
 });
 
 test('error updateOrderStatus', async () => {
-    const RES = await model.updateOrderStatus("token", "intent", "newStatus");
+    const RES = await model.updateOrderStatus("token", "orderId", "newStatus");
     expect(RES).toBe(false);
-    expect(model.updateOrderStatus(null, "intent", "newStatus"))
-    .rejects.toThrowError();
+    const RES_1 = await model.updateOrderStatus(null, "orderId", "newStatus");
+    expect(RES_1).toBe(false);
     expect(model.updateOrderStatus("vendor-token", null, "newStatus"))
     .rejects.toThrowError();
-    expect(model.updateOrderStatus("vendor-token", "intent", null))
+    expect(model.updateOrderStatus("vendor-token", "orderId", null))
     .rejects.toThrowError();
 });
 
 test('refundOrder', async () => {
-    const RES = await model.refundOrder("vendor-token", "intent");
+    const RES = await model.refundOrder("vendor-token", "orderId");
     expect(RES).toBe(true);
 });
 
 test('error refundOrder', async () => {
-    const RES = await model.refundOrder("token", "intent");
+    const RES = await model.refundOrder("token", "orderId");
     expect(RES).toBe(false);
-    expect(model.refundOrder(null, "intent"))
-    .rejects.toThrowError();
-    expect(model.refundOrder("vendor-token", null))
-    .rejects.toThrowError();
+    const RES_1 = await model.refundOrder("vendor-token", null);
+    expect(RES_1).toBe(false);
+    const RES_2 = await model.refundOrder(null, "orderId");
+    expect(RES_2).toBe(false);
 });

@@ -27,7 +27,7 @@ export default class StripeService implements Payment {
         return (INTENT.status == "canceled")
     }
 
-    public async refundIntent(INTENT_ID: string, AMOUNT?: number): Promise<any> {
+    public async refundIntent(INTENT_ID: string, AMOUNT?: number): Promise<boolean> {
         const PARAMS = {
             payment_intent: INTENT_ID,
         }

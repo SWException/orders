@@ -190,9 +190,11 @@ export default class Model {
     public async refundOrder (TOKEN: string, ORDER_ID: string) {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR) {
-            await this.PSP.refundIntent(ORDER_ID);
-            await this.DATABASE.updateOrderStatusById(ORDER_ID, this.STATUS[3]);
-            return true;
+            const IS_REFOUND = await this.PSP.refundIntent(ORDER_ID);
+            if(IS_REFOUND){
+                await this.DATABASE.updateOrderStatusById(ORDER_ID, this.STATUS[3]);
+                return true;
+            }
         }
         return false;
     }

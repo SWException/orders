@@ -9,7 +9,7 @@ export default class AddressesServiceAPI implements AddressesService {
                 Authorization: TOKEN
             }
         })
-        .then(async responseUser => await responseUser.json())
+        .then(async responseAddress => await responseAddress.json())
         .then(res => {
             if (res.status == "success")
                 return res.data;

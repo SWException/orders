@@ -19,7 +19,7 @@ export default class ProductsServiceAPI implements ProductsService {
             return false;
         })
         .catch((err: Error) => {
-            throw new Error("Error updating product "+ PRODUCT_ID +" stock. Details: " + err.message);
+            throw new Error("Error updating product " + PRODUCT_ID + " stock. Details: " + err.message);
         })
     }
 }

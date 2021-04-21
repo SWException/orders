@@ -169,7 +169,7 @@ export default class Model {
     }
 
     private async getOrdersForVendor (STATUS: string): Promise<any> {
-        // TOKEN già controllato dal metodo chiamante
+        // TOKEN già controllato dal metodo chiamante. NB: questo è un metodo privato
         return await this.DATABASE.getOrdersByStatus(STATUS);
     }
 
@@ -183,7 +183,7 @@ export default class Model {
     }
 
     private async getOrderForVendor (ORDER_ID: string): Promise<any> {
-        // TOKEN già controllato dal metodo chiamante
+        // TOKEN già controllato dal metodo chiamante NB: questo è un metodo privato
         return await this.DATABASE.getOrderById(ORDER_ID);
     }
 

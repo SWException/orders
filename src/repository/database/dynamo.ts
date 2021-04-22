@@ -8,11 +8,9 @@ export default class Dynamo implements Database {
     public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
-            Key: {
-                userid: USERNAME,
-                timestamp: Date.now()
-            },
             Item: {
+                userid: USERNAME,
+                timestamp: "" + Date.now(),
                 shippingAddress: SHIPPING,
                 billingAddress: BILLING,
                 cart: CART,

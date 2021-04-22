@@ -126,7 +126,10 @@ export default class Model {
         const ORDER_ID = INTENT.id;
         await this.DATABASE.createOrder(ORDER_ID, USERNAME, SHIPPING, BILLING, CART, this.STATUS[1]);
 
-        return ORDER_ID;
+        return {
+            id: ORDER_ID,
+            secret: INTENT['client_secret']
+        };
     }
 
     public async confirmCheckout(TOKEN: string, INTENT_ID: string): Promise<boolean> {

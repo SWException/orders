@@ -118,7 +118,8 @@ export default class Model {
 
         const SHIPPING_PROMISE = this.ADDRESSES.getAddress(SHIPPING_ID, TOKEN);
         const BILLING_PROMISE = this.ADDRESSES.getAddress(BILLING_ID, TOKEN);
-        const INTENT_PROMISE = this.PSP.createIntent(CART["total"], USERNAME);
+        const INTENT_PROMISE = this.PSP.createIntent(CART.total, USERNAME);
+       
 
         const [INTENT, SHIPPING, BILLING] = await Promise.all([INTENT_PROMISE, SHIPPING_PROMISE, BILLING_PROMISE])
 
@@ -136,7 +137,7 @@ export default class Model {
             const PROMISE_CART = this.CARTS.deleteCart(TOKEN);
             const PROMISE_PRODUCTS_UPDATE_STOCK = await this.DATABASE.getOrder(USERNAME, INTENT_ID)
                 .then((ORDER) => {
-                    const PRODUCTS: Array<any> = ORDER["products"];
+                    const PRODUCTS: Array<any> = ORDER.cart.products;
                     return PRODUCTS.map((PRODUCT) => this.PRODUCTS.updateStock(PRODUCT["id"], PRODUCT["quantity"], TOKEN));
                 })
             await Promise.all([PROMISE_DB, PROMISE_CART, ...PROMISE_PRODUCTS_UPDATE_STOCK]);

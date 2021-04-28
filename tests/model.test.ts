@@ -25,13 +25,13 @@ test('startCheckout', async () => {
 });
 
 test('error startCheckout', async () => {
-    expect(model.startCheckout(null, "shipping", "billing"))
+    await expect(model.startCheckout(null, "shipping", "billing"))
     .rejects.toThrowError("The token was not valid");
-    expect(model.startCheckout("token", null, null))
+    await expect(model.startCheckout("token", null, null))
     .rejects.toThrowError();
-    expect(model.startCheckout("token", "shipping", null))
+    await expect(model.startCheckout("token", "shipping", null))
     .rejects.toThrowError();
-    expect(model.startCheckout("token", null, "billing"))
+    await expect(model.startCheckout("token", null, "billing"))
     .rejects.toThrowError();
 });
 
@@ -43,7 +43,7 @@ test('confirmCheckout', async () => {
 test('error confirmCheckout', async () => {
     const RES = await model.confirmCheckout("token", null);
     expect(RES).toBe(false);
-    expect(model.confirmCheckout(null, "intent"))
+    await expect(model.confirmCheckout(null, "intent"))
     .rejects.toThrowError("The token was not valid");
 });
 
@@ -55,7 +55,7 @@ test('cancelCheckout', async () => {
 test('error cancelCheckout', async () => {
     const RES = await model.cancelCheckout("token", null);
     expect(RES).toBe(false);
-    expect(model.cancelCheckout(null, "intent"))
+    await expect(model.cancelCheckout(null, "intent"))
     .rejects.toThrowError("The token was not valid");
 });
 
@@ -65,7 +65,7 @@ test('getOrders', async () => {
 });
 
 test('error getOrders', async () => {
-    expect(model.getOrders(null))
+    await expect(model.getOrders(null))
     .rejects.toThrowError("The token was not valid");
 });
 
@@ -75,9 +75,9 @@ test('getOrdersForVendor', async () => {
 });
 
 test('error getOrdersForVendor', async () => {
-    expect(model.getOrders(null, "status"))
+    await expect(model.getOrders(null, "status"))
     .rejects.toThrowError("The token was not valid");
-    expect(model.getOrders("vendor-token", null))
+    await expect(model.getOrders("vendor-token", null))
     .rejects.toThrowError();
 });
 
@@ -87,9 +87,9 @@ test('getOrder', async () => {
 });
 
 test('error getOrder', async () => {
-    expect(model.getOrder(null, "orderId"))
+    await expect(model.getOrder(null, "orderId"))
     .rejects.toThrowError();
-    expect(model.getOrder("token", null))
+    await expect(model.getOrder("token", null))
     .rejects.toThrowError();
 });
 
@@ -99,9 +99,9 @@ test('getOrderForVendor', async () => {
 });
 
 test('error getOrderForVendor', async () => {
-    expect(model.getOrder(null, null))
+    await expect(model.getOrder(null, null))
     .rejects.toThrowError();
-    expect(model.getOrder("vendor-token", null))
+    await expect(model.getOrder("vendor-token", null))
     .rejects.toThrowError();
 });
 
@@ -115,9 +115,9 @@ test('error updateOrderStatus', async () => {
     expect(RES).toBe(false);
     const RES_1 = await model.updateOrderStatus(null, "orderId", "newStatus");
     expect(RES_1).toBe(false);
-    expect(model.updateOrderStatus("vendor-token", null, "newStatus"))
+    await expect(model.updateOrderStatus("vendor-token", null, "newStatus"))
     .rejects.toThrowError();
-    expect(model.updateOrderStatus("vendor-token", "orderId", null))
+    await expect(model.updateOrderStatus("vendor-token", "orderId", null))
     .rejects.toThrowError();
 });
 

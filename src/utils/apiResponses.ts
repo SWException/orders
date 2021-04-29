@@ -20,8 +20,9 @@ export default function response (
     return {
         "statusCode": statusCode,
         "headers": {
-            'Access-Control-Allow-Origin': '*', 
-            'Access-Control-Allow-Methods': '*', 
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+            'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Credentials': true
         },
         "body": JSON.stringify(BODY, null, 2)

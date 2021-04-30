@@ -15,15 +15,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
     
     const MODEL: Model = Model.createModel();
     return await MODEL.cancelCheckout(TOKEN, INTENT_ID)
-        .then(IS_CANCELED => {
-            if (IS_CANCELED)
-                return response(200, "Checkout aborted");
-            return response(400, "Checkout NOT aborted. Still waiting for Payment");
-
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
-
+        .then((result: boolean) => result ? response(200, "Checkout aborted"):
+            response(400, "Checkout NOT aborted. Still waiting for Payment"))
+        .catch((err: Error) => response(400, err.message));
 }
 

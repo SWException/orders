@@ -18,14 +18,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
 
     const MODEL: Model = Model.createModel();
     return await MODEL.startCheckout(TOKEN, SHIPPING, BILLING)
-        .then(INTENT => {
-            if (INTENT)
-                return response(200, "Waiting for Payment", INTENT);
-            return response(500, "Internal server error");
-
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
+        .then(intent => intent ? response(200, "Waiting for Payment", intent):
+            response(400, "error with intent"))
+        .catch((err: Error) => response(400, err.message));
 }
 

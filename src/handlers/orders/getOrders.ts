@@ -12,13 +12,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
 
     const MODEL: Model = Model.createModel();
     return await MODEL.getOrders(TOKEN, STATUS)
-        .then(ORDERS => {
-            if (ORDERS)
-                return response(200, null, ORDERS);
-            return response(200, "No orders yet");
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
+        .then(orders => orders ? response(200, null, orders):
+            response(200, "No orders yet"))
+        .catch((err: Error) => response(400, err.message));
 }
 

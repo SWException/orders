@@ -32,7 +32,9 @@ export default class Model {
     private readonly ADDRESSES: AddressesService;
     private readonly PRODUCTS: ProductsService;
 
-    private constructor(db: Database, psp: Payment, users: UsersService, carts: CartsService, addresses: AddressesService, products: ProductsService) {
+    private constructor (db: Database, psp: Payment, users: UsersService, carts: CartsService,
+        addresses: AddressesService, products: ProductsService) {
+
         this.DATABASE = db;
         this.PSP = psp;
         this.USERS = users;
@@ -81,12 +83,13 @@ export default class Model {
 
         public build (): Model {
             if(this.db && this.psp && this.users && this.carts && this.addresses && this.products)
-                return new Model(this.db, this.psp, this.users, this.carts, this.addresses, this.products);
+                return new Model(this.db, this.psp, this.users,
+                    this.carts, this.addresses, this.products);
             throw new Error("ModelBuilder: Missing some property");
         }
     };
 
-    public static createModel(): Model {
+    public static createModel (): Model {
         return new Model
             .Builder()
             .withDatabase(new Dynamo())
@@ -98,7 +101,7 @@ export default class Model {
             .build();
     }
 
-    public static createModelMock(): Model {
+    public static createModelMock (): Model {
         return new Model
             .Builder()
             .withDatabase(new DbMock())
@@ -110,9 +113,10 @@ export default class Model {
             .build();
     }
 
-    public async startCheckout(TOKEN: string, SHIPPING_ID: string, BILLING_ID: string): Promise<any> {
-        const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
+    public async startCheckout (TOKEN: string, SHIPPING_ID: string,
+        BILLING_ID: string): Promise<any> {
 
+        const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const CART_PROMISE = this.CARTS.getCart(TOKEN);
         const CART = await CART_PROMISE;
 
@@ -121,10 +125,12 @@ export default class Model {
         const INTENT_PROMISE = this.PSP.createIntent(CART.total, USERNAME);
        
 
-        const [INTENT, SHIPPING, BILLING] = await Promise.all([INTENT_PROMISE, SHIPPING_PROMISE, BILLING_PROMISE])
+        const [INTENT, SHIPPING, BILLING] = 
+            await Promise.all([INTENT_PROMISE, SHIPPING_PROMISE, BILLING_PROMISE])
 
         const ORDER_ID = INTENT.id;
-        await this.DATABASE.createOrder(ORDER_ID, USERNAME, SHIPPING, BILLING, CART, this.STATUS[1]);
+        await this.DATABASE.createOrder(ORDER_ID,
+            USERNAME, SHIPPING, BILLING, CART, this.STATUS[1]);
 
         return {
             id: ORDER_ID,
@@ -132,16 +138,18 @@ export default class Model {
         };
     }
 
-    public async confirmCheckout(TOKEN: string, INTENT_ID: string): Promise<boolean> {
+    public async confirmCheckout (TOKEN: string, INTENT_ID: string): Promise<boolean> {
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const IS_PAID = await this.PSP.intentIsPaid(INTENT_ID)
         if (USERNAME && IS_PAID) {
-            const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[2]);
+            const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME,
+                INTENT_ID, this.STATUS[2]);
             const PROMISE_CART = this.CARTS.deleteCart(TOKEN);
             const PROMISE_PRODUCTS_UPDATE_STOCK = await this.DATABASE.getOrder(USERNAME, INTENT_ID)
                 .then((ORDER) => {
                     const PRODUCTS: Array<any> = ORDER.cart.products;
-                    return PRODUCTS.map((PRODUCT) => this.PRODUCTS.updateStock(PRODUCT["id"], PRODUCT["quantity"], TOKEN));
+                    return PRODUCTS.map((PRODUCT) => this.PRODUCTS.updateStock(PRODUCT["id"],
+                        PRODUCT["quantity"], TOKEN));
                 })
             await Promise.all([PROMISE_DB, PROMISE_CART, ...PROMISE_PRODUCTS_UPDATE_STOCK]);
 
@@ -150,7 +158,7 @@ export default class Model {
         return false;
     }
 
-    public async cancelCheckout(TOKEN: string, INTENT_ID: string): Promise<boolean> {
+    public async cancelCheckout (TOKEN: string, INTENT_ID: string): Promise<boolean> {
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const IS_CANCELLED = await this.PSP.cancelIntent(INTENT_ID)
         if (USERNAME && IS_CANCELLED) {
@@ -191,11 +199,11 @@ export default class Model {
         return await this.DATABASE.getOrderById(ORDER_ID);
     }
 
-    public async refundOrder (TOKEN: string, ORDER_ID: string) {
-        const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
+    public async refundOrder (TOKEN: string, ORDER_ID: string): Promise<boolean> {
+        const IS_VENDOR: boolean = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR) {
-            const IS_REFOUND = await this.PSP.refundIntent(ORDER_ID);
-            if(IS_REFOUND){
+            const IS_REFUND: boolean = await this.PSP.refundIntent(ORDER_ID);
+            if(IS_REFUND){
                 await this.DATABASE.updateOrderStatusById(ORDER_ID, this.STATUS[3]);
                 return true;
             }
@@ -203,7 +211,9 @@ export default class Model {
         return false;
     }
 
-    public async updateOrderStatus(TOKEN: string, ORDER_ID: string, STATUS: string): Promise<boolean>  {
+    public async updateOrderStatus (TOKEN: string, ORDER_ID: string,
+        STATUS: string): Promise<boolean> {
+        
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR) {
             await this.DATABASE.updateOrderStatusById(ORDER_ID, STATUS);

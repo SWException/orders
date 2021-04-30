@@ -20,13 +20,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
 
     const MODEL: Model = Model.createModel();
     return await MODEL.updateOrderStatus(TOKEN, ORDER_ID, STATUS)
-        .then(IS_UPDATED => {
-            if (IS_UPDATED)
-                return response(200, "Order status updated");
-            return response(400, "Order status NOT updated");
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
+        .then((result: boolean) => result ? response(200, "Order status updated") : 
+            response(400, "Order status NOT updated"))
+        .catch((err: Error) => response(400, err.message));
 }
 

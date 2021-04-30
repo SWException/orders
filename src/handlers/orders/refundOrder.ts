@@ -15,14 +15,9 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
 
     const MODEL: Model = Model.createModel();
     return await MODEL.refundOrder(TOKEN, ORDER_ID)
-        .then(IS_REFUNDED => {
-            if (IS_REFUNDED)
-                return response(200, "Order refunded");
-            return response(400, "Order NOT refunded");
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
+        .then((result: boolean) => result ? response(200, "Order refunded") :
+            response(400, "Order NOT refunded"))
+        .catch((err: Error) =>  response(400, err.message));
 
 }
 

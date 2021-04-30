@@ -15,14 +15,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
 
     const MODEL: Model = Model.createModel();
     return await MODEL.confirmCheckout(TOKEN, INTENT_ID)
-        .then(IS_PAID => {
-            if (IS_PAID)
-                return response(200, "Order confirmed");
-            return response(402, "Payment not confirmed");
-
-        })
-        .catch((err: Error) => {
-            return response(400, err.message);
-        });
+        .then((result: boolean) => result ? response(200, "Order confirmed"):
+            response(402, "Payment not confirmed"))
+        .catch((err: Error) => response(400, err.message));
 }
 

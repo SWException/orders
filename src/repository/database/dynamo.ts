@@ -5,7 +5,7 @@ export default class Dynamo implements Database {
     private static readonly TABLE_NAME = "orders";
     private static readonly DOCUMENT_CLIENT = new AWS.DynamoDB.DocumentClient({ region: "eu-central-1" });
 
-    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string): Promise<any> {
+    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string, SHIPPING_FEE): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Item: {
@@ -14,8 +14,11 @@ export default class Dynamo implements Database {
                 shippingAddress: SHIPPING,
                 billingAddress: BILLING,
                 cart: CART,
+                shippingFee: SHIPPING_FEE,
+                total: SHIPPING_FEE + CART.total,
                 orderid: ORDER_ID,
                 orderStatus: STATUS
+                
             }
         };
 

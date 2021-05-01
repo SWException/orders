@@ -116,13 +116,14 @@ export default class Model {
     public async startCheckout (TOKEN: string, SHIPPING_ID: string,
         BILLING_ID: string): Promise<any> {
 
+        const SHIPPING_FEE: number = 5;
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const CART_PROMISE = this.CARTS.getCart(TOKEN);
         const CART = await CART_PROMISE;
 
         const SHIPPING_PROMISE = this.ADDRESSES.getAddress(SHIPPING_ID, TOKEN);
         const BILLING_PROMISE = this.ADDRESSES.getAddress(BILLING_ID, TOKEN);
-        const INTENT_PROMISE = this.PSP.createIntent(CART.total, USERNAME);
+        const INTENT_PROMISE = this.PSP.createIntent(CART.total+SHIPPING_FEE, USERNAME);
        
 
         const [INTENT, SHIPPING, BILLING] = 
@@ -130,7 +131,7 @@ export default class Model {
 
         const ORDER_ID = INTENT.id;
         await this.DATABASE.createOrder(ORDER_ID,
-            USERNAME, SHIPPING, BILLING, CART, this.STATUS[1]);
+            USERNAME, SHIPPING, BILLING, CART, this.STATUS[1], SHIPPING_FEE);
 
         return {
             id: ORDER_ID,

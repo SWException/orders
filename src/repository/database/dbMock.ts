@@ -11,8 +11,8 @@ export default class DbMock implements Database {
             return;
         throw new Error("Missing some parameters");
     }
-    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string) {
-        if(ORDER_ID && USERNAME && SHIPPING && BILLING && CART && STATUS)
+    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string, SHIPPING_FEE: number) {
+        if(ORDER_ID && USERNAME && SHIPPING && BILLING && CART && STATUS && SHIPPING_FEE)
             return;
         throw new Error("Missing some parameters");
     }

@@ -32,9 +32,8 @@ export default class Model {
     private readonly ADDRESSES: AddressesService;
     private readonly PRODUCTS: ProductsService;
 
-    private constructor (db: Database, psp: Payment, users: UsersService, carts: CartsService,
+    private constructor (db: Database, psp: Payment, users: UsersService, carts: CartsService, 
         addresses: AddressesService, products: ProductsService) {
-
         this.DATABASE = db;
         this.PSP = psp;
         this.USERS = users;
@@ -113,10 +112,10 @@ export default class Model {
             .build();
     }
 
-    public async startCheckout (TOKEN: string, SHIPPING_ID: string,
-        BILLING_ID: string): Promise<any> {
+    public async startCheckout (TOKEN: string, SHIPPING_ID: string, BILLING_ID: string): 
+    Promise<any> {
 
-        const SHIPPING_FEE: number = 5;
+        const SHIPPING_FEE = 5;
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const CART_PROMISE = this.CARTS.getCart(TOKEN);
         const CART = await CART_PROMISE;
@@ -140,22 +139,38 @@ export default class Model {
     }
 
     public async confirmCheckout (TOKEN: string, INTENT_ID: string): Promise<boolean> {
+        console.log("confirmCheckout - INTENT_ID: ", INTENT_ID);
+        
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const IS_PAID = await this.PSP.intentIsPaid(INTENT_ID)
         if (USERNAME && IS_PAID) {
-            const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME,
+            console.log("confirmCheckout - Order paid: ", USERNAME, IS_PAID);
+
+            console.log("calling updateCheckoutStatus");
+            const PROMISE_DB = this.DATABASE.updateCheckoutStatus(USERNAME, 
                 INTENT_ID, this.STATUS[2]);
+
+            console.log("calling deleteCart");
             const PROMISE_CART = this.CARTS.deleteCart(TOKEN);
+
+            console.log("calling getOrder");
             const PROMISE_PRODUCTS_UPDATE_STOCK = await this.DATABASE.getOrder(USERNAME, INTENT_ID)
                 .then((ORDER) => {
+                    console.log("response of getOrder: ", ORDER);
                     const PRODUCTS: Array<any> = ORDER.cart.products;
                     return PRODUCTS.map((PRODUCT) => this.PRODUCTS.updateStock(PRODUCT["id"],
                         PRODUCT["quantity"], TOKEN));
                 })
+
+            console.log("Aspetto le chiamate a: updateCheckoutStatus, deleteCart e updateStock di " 
+                + PROMISE_PRODUCTS_UPDATE_STOCK.length + "prodotti");
+            
             await Promise.all([PROMISE_DB, PROMISE_CART, ...PROMISE_PRODUCTS_UPDATE_STOCK]);
 
             return true;
         }
+        console.log("confirmCheckout - Not paid: ", USERNAME, IS_PAID);
+        
         return false;
     }
 
@@ -212,9 +227,8 @@ export default class Model {
         return false;
     }
 
-    public async updateOrderStatus (TOKEN: string, ORDER_ID: string,
-        STATUS: string): Promise<boolean> {
-        
+    public async updateOrderStatus (TOKEN: string, ORDER_ID: string, STATUS: string): 
+    Promise<boolean>  {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR) {
             await this.DATABASE.updateOrderStatusById(ORDER_ID, STATUS);

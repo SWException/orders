@@ -85,7 +85,7 @@ export default class DbMock implements Database {
                             "name": "Peperino comics",
                             "price": 3.36,
                             "primaryPhoto": "https://imagebucket-products-dev.s3.eu-central-1.amazonaws.com/paperino.jpg",
-                            "productId": "4",
+                            "id": "4",
                             "quantity": 1,
                             "tax": 20,
                             "total": 3.36
@@ -94,7 +94,7 @@ export default class DbMock implements Database {
                             "name": "Ball",
                             "price": 60,
                             "primaryPhoto": "https://imagebucket-products-dev.s3.eu-central-1.amazonaws.com/ball.jpg",
-                            "productId": "10",
+                            "id": "10",
                             "quantity": 1,
                             "tax": 20,
                             "total": 60
@@ -103,7 +103,7 @@ export default class DbMock implements Database {
                             "name": "Stereo",
                             "price": 138.72,
                             "primaryPhoto": "https://imagebucket-products-dev.s3.eu-central-1.amazonaws.com/stereo.jpg",
-                            "productId": "14",
+                            "id": "14",
                             "quantity": 1,
                             "tax": 20,
                             "total": 138.72

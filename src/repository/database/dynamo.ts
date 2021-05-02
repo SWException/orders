@@ -3,9 +3,11 @@ import * as AWS from "aws-sdk";
 
 export default class Dynamo implements Database {
     private static readonly TABLE_NAME = "orders";
-    private static readonly DOCUMENT_CLIENT = new AWS.DynamoDB.DocumentClient({ region: "eu-central-1" });
+    private static readonly DOCUMENT_CLIENT = 
+        new AWS.DynamoDB.DocumentClient({ region: "eu-central-1" });
 
-    public async createOrder(ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string, CART: { [key: string]: any; }, STATUS: string, SHIPPING_FEE): Promise<any> {
+    public async createOrder (ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string,
+        CART: { [key: string]: any; }, STATUS: string, SHIPPING_FEE: number): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Item: {
@@ -32,7 +34,8 @@ export default class Dynamo implements Database {
         return (DATA) ? true : false;
     }
 
-    private async updateOrderStatus (USERNAME: string, TIMESTAMP: string, STATUS: string): Promise<any> {
+    private async updateOrderStatus (USERNAME: string, TIMESTAMP: string, STATUS: string): 
+    Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Key: {
@@ -44,27 +47,29 @@ export default class Dynamo implements Database {
                 ":s": STATUS
             }
         }
+        console.log("updateOrderStatus PARAMS: ", PARAMS);
 
         const DATA = await Dynamo.DOCUMENT_CLIENT.update(PARAMS)
-            .promise()
+            .promise();
         
-        console.log("updateCheckoutStatus", DATA);
+        console.log("updateOrderStatus", JSON.stringify(DATA));
         return DATA;
     }
 
-    public async updateOrderStatusById(ORDER_ID: string, STATUS: string): Promise<any> {
+    public async updateOrderStatusById (ORDER_ID: string, STATUS: string): Promise<any> {
         const ORDER_TO_UPDATE = await this.getOrderById(ORDER_ID);
         return await this.updateOrderStatus(ORDER_TO_UPDATE.userid, ORDER_TO_UPDATE.timestamp, STATUS);
     }
 
-    public async updateCheckoutStatus(USERNAME: string, ORDER_ID: string, STATUS: string): Promise<any> {
+    public async updateCheckoutStatus (USERNAME: string, ORDER_ID: string, STATUS: string): 
+    Promise<any> {
         const ORDER_TO_UPDATE = await this.getOrder(USERNAME, ORDER_ID);
         console.log("updateCheckoutStatus", ORDER_TO_UPDATE);
         
         return await this.updateOrderStatus(USERNAME, ORDER_TO_UPDATE.timestamp, STATUS);
     }
 
-    public async getOrderById(ORDER_ID: string): Promise<any> {
+    public async getOrderById (ORDER_ID: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             IndexName: "id-index",
@@ -78,7 +83,7 @@ export default class Dynamo implements Database {
         return DATA.Items.pop();
     }
 
-    public async getOrder(USERNAME: string, ORDER_ID: string): Promise<any> {
+    public async getOrder (USERNAME: string, ORDER_ID: string): Promise<any> {
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             IndexName: "user-index",
@@ -93,7 +98,7 @@ export default class Dynamo implements Database {
         return DATA.Items.pop();
     }
 
-    public async getOrdersByStatus(STATUS: string): Promise<any> {
+    public async getOrdersByStatus (STATUS: string): Promise<any> {
         const PARAMS = {
             KeyConditionExpression: 'orderStatus = :s',
             ExpressionAttributeValues: {
@@ -108,7 +113,7 @@ export default class Dynamo implements Database {
         return DATA.Items;
     }
 
-    public async getOrdersByUsername(USERNAME: string): Promise<any> {
+    public async getOrdersByUsername (USERNAME: string): Promise<any> {
         const PARAMS = {
             KeyConditionExpression: 'userid = :username',
             ExpressionAttributeValues: {

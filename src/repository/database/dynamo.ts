@@ -8,6 +8,7 @@ export default class Dynamo implements Database {
 
     public async createOrder (ORDER_ID: string, USERNAME: string, SHIPPING: string, BILLING: string,
         CART: { [key: string]: any; }, STATUS: string, SHIPPING_FEE: number): Promise<any> {
+        const TOTAL = CART.total + SHIPPING_FEE);
         const PARAMS = {
             TableName: Dynamo.TABLE_NAME,
             Item: {
@@ -17,7 +18,7 @@ export default class Dynamo implements Database {
                 billingAddress: BILLING,
                 cart: CART,
                 shippingFee: SHIPPING_FEE,
-                total: SHIPPING_FEE + CART.total,
+                total: TOTAL,
                 orderid: ORDER_ID,
                 orderStatus: STATUS
                 

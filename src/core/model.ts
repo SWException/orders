@@ -184,11 +184,11 @@ export default class Model {
         return false;
     }
 
-    public async getOrders (TOKEN: string, STATUS?: string): Promise<any> {
+    public async getOrders (TOKEN: string, STATUS?: string, SEARCH?: string): Promise<any> {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR){
             if(STATUS)
-                return this.getOrdersForVendor(STATUS);
+                return this.getOrdersForVendor(STATUS, SEARCH);
             throw new Error("Order status not defined!");
         }
 
@@ -196,9 +196,9 @@ export default class Model {
         return await this.DATABASE.getOrdersByUsername(USERNAME);
     }
 
-    private async getOrdersForVendor (STATUS: string): Promise<any> {
+    private async getOrdersForVendor (STATUS: string, SEARCH?: string): Promise<any> {
         // TOKEN già controllato dal metodo chiamante. NB: questo è un metodo privato
-        return await this.DATABASE.getOrdersByStatus(STATUS);
+        return await this.DATABASE.getOrdersByStatus(STATUS, SEARCH);
     }
 
     public async getOrder (TOKEN: string, ORDER_ID: string): Promise<any> {

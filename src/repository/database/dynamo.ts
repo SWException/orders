@@ -99,8 +99,8 @@ export default class Dynamo implements Database {
         return DATA.Items.pop();
     }
 
-    public async getOrdersByStatus (STATUS: string): Promise<any> {
-        const PARAMS = {
+    public async getOrdersByStatus (STATUS: string, SEARCH?: string): Promise<any> {
+        const PARAMS: AWS.DynamoDB.DocumentClient.QueryInput = {
             KeyConditionExpression: 'orderStatus = :s',
             ExpressionAttributeValues: {
                 ":s": STATUS
@@ -109,6 +109,14 @@ export default class Dynamo implements Database {
             ScanIndexForward: false,
             IndexName: "status-index"
         };
+
+        if(SEARCH){
+            PARAMS.ExpressionAttributeNames = {
+                "#id": "orderid"
+            }
+            PARAMS.ExpressionAttributeValues[':id'] = SEARCH;
+            PARAMS.FilterExpression = "contains(#id, :id)";
+        }
 
         const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
         return DATA.Items;

@@ -131,7 +131,7 @@ export default class DbMock implements Database {
         throw new Error("Missing some parameters");
     }
 
-    public async getOrdersByStatus(STATUS: string) {
+    public async getOrdersByStatus(STATUS: string, _SEARCH?: string) {
         if(STATUS)
             return [
                 {

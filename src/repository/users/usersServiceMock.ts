@@ -15,5 +15,12 @@ export default class UsersServiceMock implements UsersService {
         }
         throw new Error(`The token was not valid`);
     }
+
+    public async getCustomerInfo (token: string, username: string): Promise<any> {
+        if (token && username){
+            return { name: "username-mock-example-abc123", username: username};
+        }
+        throw new Error(`The token was not valid`);
+    }
     
 }

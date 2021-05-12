@@ -187,8 +187,25 @@ export default class Model {
     public async getOrders (TOKEN: string, STATUS?: string, SEARCH?: string): Promise<any> {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
         if (IS_VENDOR){
-            if(STATUS)
-                return this.getOrdersForVendor(STATUS, SEARCH);
+            if(STATUS){
+                const ORDERS: Array<any> = await this.getOrdersForVendor(STATUS, SEARCH);
+                const PROMISES: Array<Promise<any>> = [];
+                let promisesResult: Array<any> = [];
+                try {
+                    ORDERS.forEach((order, key) => {
+                        PROMISES[key] = this.USERS.getCustomerInfo(TOKEN, order?.userid)
+                            .catch(() => null);
+                    });
+                }
+                catch(e){
+                    console.log(e);
+                }
+                promisesResult = await Promise.all(PROMISES);
+                promisesResult?.forEach((customer, key) => {
+                    ORDERS[key]["customer"] = customer;
+                });
+                return ORDERS;
+            }
             throw new Error("Order status not defined!");
         }
 
@@ -203,8 +220,12 @@ export default class Model {
 
     public async getOrder (TOKEN: string, ORDER_ID: string): Promise<any> {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
-        if (IS_VENDOR)
-            return await this.getOrderForVendor(ORDER_ID);
+        if (IS_VENDOR){
+            const ORDER = await this.getOrderForVendor(ORDER_ID);
+            ORDER["customer"] = await this.USERS.getCustomerInfo(TOKEN, ORDER?.userid)
+                .catch(() => null);
+            return ORDER;
+        }
 
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         return await this.DATABASE.getOrder(USERNAME, ORDER_ID);

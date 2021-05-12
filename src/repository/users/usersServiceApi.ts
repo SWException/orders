@@ -3,6 +3,19 @@ import UsersService from "src/repository/usersService";
 
 export default class UsersServiceAPI implements UsersService {
 
+    public async getCustomerInfo (token: string, username: string): Promise<any> {
+        return await fetch(process.env.SERVICES + `/users/customers/${username}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`,
+            }
+        })
+            .then(async responseUser => await responseUser.json())
+            .then(res => res.data)
+            .catch(() => null);
+    }
+
     public async checkVendor (token: string): Promise<boolean> {
         const RES = await this.checkUser(token, "vendors")
         if (RES["status"] == "success")

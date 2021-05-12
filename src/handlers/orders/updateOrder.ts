@@ -13,8 +13,8 @@ export const HANDLER: APIGatewayProxyHandler = async (event) => {
         return response(400, "missing id order");
     }
 
-    const STATUS: string = event.pathParameters?.id;
-    if (STATUS == null) {
+    const STATUS: string = JSON.parse(event?.body).status;
+    if (!STATUS) {
         return response(400, "missing new order status");
     }
 

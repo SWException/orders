@@ -39,6 +39,8 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
     REGION: ${self:provider.region}
+    STRIPE_TOKEN: ${env:STRIPE_TOKEN}
+    SERVICES: ${env:SERVICES}
 
   iam:
     role:
@@ -51,34 +53,62 @@ provider:
 
 functions:
   getOrders:
-    handler: "src/orders/getOrders.HANDLER"
+    handler: "src/handlers/orders/getOrders.HANDLER"
     events:
       - http:
           path: /orders
           method: GET
           cors: true
   getOrder:
-    handler: "src/orders/getOrderDetails.HANDLER"
+    handler: "src/handlers/orders/getOrderDetails.HANDLER"
     events:
       - http:
           path: /orders/{id}
           method: GET
           cors: true
-  placeOrder:
-    handler: "src/orders/placeOrder.HANDLER"
+  updateOrder:
+    handler: "src/handlers/orders/updateOrder.HANDLER"
     events:
       - http:
-          path: /orders/
+          path: /orders/{id}
+          method: PATCH
+          cors: true
+  refundOrder:
+    handler: "src/handlers/orders/refundOrder.HANDLER"
+    events:
+      - http:
+          path: /orders/{id}/refund
+          method: PATCH
+          cors: true
+  startCheckout:
+    handler: "src/handlers/checkout/startCheckout.HANDLER"
+    events:
+      - http:
+          path: /checkout/
           method: POST
+          cors: true
+  confirmCheckout:
+    handler: "src/handlers/checkout/confirmCheckout.HANDLER"
+    events:
+      - http:
+          path: /checkout/{intent}
+          method: PATCH
+          cors: true
+  cancelCheckout:
+    handler: "src/handlers/checkout/cancelCheckout.HANDLER"
+    events:
+      - http:
+          path: /checkout/{intent}
+          method: DELETE
           cors: true
 
 resources:
   Resources:
     #dynamodb tables
-    OrderTable:
+    OrdersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: order
+        TableName: orders
         AttributeDefinitions:
           - AttributeName: orderid
             AttributeType: "S"
@@ -86,7 +116,7 @@ resources:
             AttributeType: "S"
           - AttributeName: timestamp
             AttributeType: "S"
-          - AttributeName: status
+          - AttributeName: orderStatus
             AttributeType: "S"
         KeySchema:
           - AttributeName: userid
@@ -94,11 +124,27 @@ resources:
           - AttributeName: timestamp
             KeyType: RANGE
         GlobalSecondaryIndexes:
-          - IndexName: getStatus
+          - IndexName: user-index
             KeySchema:
-              - AttributeName: status
+              - AttributeName: userid
+                KeyType: HASH
+              - AttributeName: orderid
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: status-index
+            KeySchema:
+              - AttributeName: orderStatus
                 KeyType: HASH
               - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: user-status-index
+            KeySchema:
+              - AttributeName: userid
+                KeyType: HASH
+              - AttributeName: orderStatus
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"
@@ -109,4 +155,3 @@ resources:
             Projection:
               ProjectionType: "ALL"
         BillingMode: PAY_PER_REQUEST
-              

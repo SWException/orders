@@ -1,0 +1,84 @@
+patch:
+  summary: Payment succeded
+  description: Call this API after the payment was successful
+  tags:
+    - checkout
+  operationId: completeCheckout
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT
+      schema:
+        type: string
+      required: true
+    - in: path
+      name: intent-id
+      description: Stripe intent id
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: "order confirmed"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example:
+            {
+              status: "success",
+              message: "ordine confermato"
+            }
+    400:
+      description: "error request"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example:
+            {
+              status: "error",
+              message: "ordine in attesa di pagamento"
+            }
+delete:
+  summary: Cancel payment intent
+  description: Call this API if you want to cancel an order not already paid 
+  tags:
+    - checkout
+  operationId: cancelCheckout
+  parameters:
+    - in: header
+      name: Authorization
+      description: token JWT
+      schema:
+        type: string
+      required: true
+    - in: path
+      name: intent-id
+      description: Stripe intent id
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: "order canceled"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example:
+            {
+              status: "success",
+              message: "ordine cancellato"
+            }
+    400:
+      description: "error"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/response.json#/response"
+          example:
+            {
+              status: "error",
+              message: "errore o intent non trovato"
+            }

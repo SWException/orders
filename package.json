@@ -17,7 +17,7 @@
     "@types/stripe": "^8.0.417",
     "ajv": "^7.2.1",
     "ajv-formats": "^1.5.1",
-    "aws-sdk": "^2.847.0",
+    "aws-sdk": "^2.888.0",
     "babel-jest": "^26.6.3",
     "eslint-ts-naming-convention": "^1.2.1",
     "file-type": "^16.3.0",

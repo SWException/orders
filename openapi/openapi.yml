@@ -16,3 +16,9 @@ paths:
     $ref: "orders.yml"
   /orders/{id}:
     $ref: "ordersByID.yml"
+  /orders/{id}/refund:
+    $ref: "ordersByIDRefund.yml"
+  /checkout/:
+    $ref: "checkout.yml"
+  /checkout/{intent-id}/:
+    $ref: "checkoutByID.yml"

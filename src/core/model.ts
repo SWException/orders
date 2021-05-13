@@ -135,7 +135,11 @@ export default class Model {
 
         return {
             id: ORDER_ID,
-            secret: INTENT['client_secret']
+            secret: INTENT['client_secret'],
+            cartTotal: CART?.total,
+            tax: CART?.tax,
+            shippingFee: SHIPPING_FEE,
+            total: (CART?.total + SHIPPING_FEE),
         };
     }
 
@@ -186,7 +190,9 @@ export default class Model {
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
         const IS_CANCELLED = await this.PSP.cancelIntent(INTENT_ID)
         if (USERNAME && IS_CANCELLED) {
-            await this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[0]);
+            await this.DATABASE.updateCheckoutStatus(USERNAME, INTENT_ID, this.STATUS[0])
+                .catch(()=>null);
+            await this.DATABASE.deleteOrder(USERNAME, INTENT_ID);
             return true;
         }
         return false;

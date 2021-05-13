@@ -141,4 +141,18 @@ export default class Dynamo implements Database {
         const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
         return DATA.Items;
     }
+
+    public async deleteOrder (USERNAME: string, ORDER_ID: string): Promise<any>{
+        const ORDER = await this.getOrder(USERNAME, ORDER_ID);
+        const PARAMS: AWS.DynamoDB.DocumentClient.DeleteItemInput = {
+            Key: {
+                userid: USERNAME,
+                timestamp: ORDER?.timestamp
+            },
+            TableName: Dynamo.TABLE_NAME
+        };
+
+        const DATA = await Dynamo.DOCUMENT_CLIENT.delete(PARAMS).promise();
+        return DATA;
+    }
 }

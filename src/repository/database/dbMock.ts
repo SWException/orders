@@ -163,6 +163,10 @@ export default class DbMock implements Database {
         throw new Error("Missing some parameters");
     }
 
+    public async deleteOrder (_USERNAME: string, _ORDER_ID: string) {
+        return true;
+    }
+
     public async getOrdersByUsername(USERNAME: string, _STATUS?: string) {
         if(USERNAME)
             return [

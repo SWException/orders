@@ -122,8 +122,8 @@ export default class Dynamo implements Database {
         return DATA.Items;
     }
 
-    public async getOrdersByUsername (USERNAME: string): Promise<any> {
-        const PARAMS = {
+    public async getOrdersByUsername (USERNAME: string, STATUS?: string): Promise<any> {
+        const PARAMS: AWS.DynamoDB.DocumentClient.QueryInput = {
             KeyConditionExpression: 'userid = :username',
             ExpressionAttributeValues: {
                 ":username": USERNAME
@@ -131,6 +131,12 @@ export default class Dynamo implements Database {
             TableName: Dynamo.TABLE_NAME,
             ScanIndexForward: false
         };
+
+        if(STATUS){
+            PARAMS.ExpressionAttributeValues[":s"] = STATUS;
+            PARAMS.KeyConditionExpression += " AND orderStatus = :s";
+            PARAMS.IndexName = "user-status-index";
+        }
 
         const DATA = await Dynamo.DOCUMENT_CLIENT.query(PARAMS).promise();
         return DATA.Items;

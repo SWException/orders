@@ -140,6 +140,14 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"
+          - IndexName: user-status-index
+            KeySchema:
+              - AttributeName: userid
+                KeyType: HASH
+              - AttributeName: orderStatus
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
           - IndexName: id-index
             KeySchema:
               - AttributeName: orderid

@@ -114,6 +114,7 @@ export default class Model {
 
     public async startCheckout (TOKEN: string, SHIPPING_ID: string, BILLING_ID: string): 
     Promise<any> {
+        await this.deletePendingCheckoutIfPresent(TOKEN).catch();
 
         const SHIPPING_FEE = 5;
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
@@ -136,6 +137,13 @@ export default class Model {
             id: ORDER_ID,
             secret: INTENT['client_secret']
         };
+    }
+
+    public async deletePendingCheckoutIfPresent(TOKEN: string): Promise<void> {
+        const ORDERS = await this.getOrders(TOKEN, this.STATUS[1]);
+        for await (const ORDER of ORDERS) {
+            await this.cancelCheckout(TOKEN, ORDER.orderid).catch(() => false);
+        }
     }
 
     public async confirmCheckout (TOKEN: string, INTENT_ID: string): Promise<boolean> {
@@ -186,6 +194,9 @@ export default class Model {
 
     public async getOrders (TOKEN: string, STATUS?: string, SEARCH?: string): Promise<any> {
         const IS_VENDOR = await this.USERS.checkVendor(TOKEN);
+        if(STATUS == "undefined"){
+            STATUS = undefined;
+        }
         if (IS_VENDOR){
             if(STATUS){
                 const ORDERS: Array<any> = await this.getOrdersForVendor(STATUS, SEARCH);
@@ -210,7 +221,7 @@ export default class Model {
         }
 
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
-        return await this.DATABASE.getOrdersByUsername(USERNAME);
+        return await this.DATABASE.getOrdersByUsername(USERNAME, STATUS);
     }
 
     private async getOrdersForVendor (STATUS: string, SEARCH?: string): Promise<any> {
@@ -228,7 +239,16 @@ export default class Model {
         }
 
         const USERNAME = await this.USERS.getCustomerUsername(TOKEN);
-        return await this.DATABASE.getOrder(USERNAME, ORDER_ID);
+        const ORDER = await this.DATABASE.getOrder(USERNAME, ORDER_ID);
+
+        if(ORDER.orderStatus == this.STATUS[1]){
+            const RES = await this.confirmCheckout(TOKEN, ORDER_ID);
+            if(RES){
+                ORDER.orderStatus = this.STATUS[2];
+            }
+        }
+
+        return ORDER;
     }
 
     private async getOrderForVendor (ORDER_ID: string): Promise<any> {
